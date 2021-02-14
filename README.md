@@ -1,5 +1,4 @@
-<img align="center" width="500" src="Design.png" alt="MultiChat Logo" />
-
+![](Design.png)
 # MultiChat
 
 This project was build as an assignment for the HAN University of Applied
