@@ -1,6 +1,6 @@
 ﻿using AppKit;
 
-namespace MultiChat_Client
+namespace MultiChat.Client
 {
     static class MainClass
     {

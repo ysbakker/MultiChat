@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiChat-Client", "MultiChat-Client\MultiChat-Client.csproj", "{AC414B7C-7901-4559-AC5B-7853B24C7ACA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiChat.Client", "MultiChat.Client\MultiChat.Client.csproj", "{AC414B7C-7901-4559-AC5B-7853B24C7ACA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

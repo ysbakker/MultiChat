@@ -1,7 +1,7 @@
 ﻿using AppKit;
 using Foundation;
 
-namespace MultiChat_Client
+namespace MultiChat.Client
 {
     [Register("AppDelegate")]
     public class AppDelegate : NSApplicationDelegate

@@ -6,8 +6,8 @@
         <ProjectGuid>{AC414B7C-7901-4559-AC5B-7853B24C7ACA}</ProjectGuid>
         <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
         <OutputType>Exe</OutputType>
-        <RootNamespace>MultiChat_Client</RootNamespace>
-        <AssemblyName>MultiChat_Client</AssemblyName>
+        <RootNamespace>MultiChat.Client</RootNamespace>
+        <AssemblyName>MultiChat.Client</AssemblyName>
         <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
         <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
         <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
@@ -45,30 +45,50 @@
         <PlatformTarget>x86</PlatformTarget>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="System"/>
-        <Reference Include="System.Core"/>
-        <Reference Include="Xamarin.Mac"/>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="Xamarin.Mac" />
     </ItemGroup>
     <ItemGroup>
-        <ImageAsset Include="Assets.xcassets\Contents.json"/>
+        <ImageAsset Include="Assets.xcassets\Contents.json" />
+        <ImageAsset Include="Assets.xcassets\logo.imageset\Contents.json" />
+        <ImageAsset Include="Assets.xcassets\logo.imageset\logo.png" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Resources\"/>
+        <Folder Include="Resources\" />
+        <Folder Include="Assets.xcassets\logo.imageset\" />
     </ItemGroup>
     <ItemGroup>
-        <None Include="Info.plist"/>
-        <None Include="Entitlements.plist"/>
+        <None Include="Info.plist" />
+        <None Include="Entitlements.plist" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Main.cs"/>
-        <Compile Include="AppDelegate.cs"/>
-        <Compile Include="ViewController.cs"/>
-        <Compile Include="ViewController.designer.cs">
-            <DependentUpon>ViewController.cs</DependentUpon>
+        <Compile Include="Controllers\ClientChatController.cs" />
+        <Compile Include="Controllers\ClientChatController.designer.cs">
+          <DependentUpon>ClientChatController.cs</DependentUpon>
         </Compile>
+        <Compile Include="Controllers\ClientSettingsController.cs" />
+        <Compile Include="Controllers\ClientSettingsController.designer.cs">
+          <DependentUpon>ClientSettingsController.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Main.cs" />
+        <Compile Include="AppDelegate.cs" />
     </ItemGroup>
     <ItemGroup>
-        <InterfaceDefinition Include="Main.storyboard"/>
+        <InterfaceDefinition Include="Main.storyboard" />
     </ItemGroup>
-    <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets"/>
+    <ItemGroup>
+      <BundleResource Include="Resources\.DS_Store" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Icon-1.png" />
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Icon-2.png" />
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Icon-3.png" />
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Icon-4.png" />
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Icon-5.png" />
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Icon-6.png" />
+      <Content Include="Assets.xcassets\AppIcon.appiconset\Icon.png" />
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
