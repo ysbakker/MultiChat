@@ -1,7 +1,8 @@
 // WARNING
 //
-// This file has been generated automatically by Visual Studio to store outlets and
-// actions made in the UI designer. If it is removed, they will be lost.
+// This file has been generated automatically by Rider IDE
+//   to store outlets and actions made in Xcode.
+// If it is removed, they will be lost.
 // Manual changes to this file may not be handled correctly.
 //
 using Foundation;
@@ -18,9 +19,9 @@ namespace MultiChat.Client.Controllers
 		[Outlet]
 		AppKit.NSScrollView ClientChatMessageList { get; set; }
 
-		[Action ("ClientChatSendButton:")]
-		partial void ClientChatSendButton (AppKit.NSButton sender);
-		
+		[Action ("ClientChatSendButtonPressed:")]
+		partial void ClientChatSendButtonPressed (AppKit.NSButton sender);
+
 		void ReleaseDesignerOutlets ()
 		{
 			if (ClientChatMessageBox != null) {
@@ -32,6 +33,7 @@ namespace MultiChat.Client.Controllers
 				ClientChatMessageList.Dispose ();
 				ClientChatMessageList = null;
 			}
+
 		}
 	}
 }
