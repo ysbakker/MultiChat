@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiChat.Client", "MultiCh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiChat.Server", "MultiChat.Server\MultiChat.Server.csproj", "{81857D0E-70C6-429C-9AEB-5BEF3D485D4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiChat.Common", "MultiChat.Common\MultiChat.Common.csproj", "{944434C1-840B-4165-A379-986DC72E5B32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -18,5 +20,9 @@ Global
 		{81857D0E-70C6-429C-9AEB-5BEF3D485D4D}.Debug|x86.Build.0 = Debug|x86
 		{81857D0E-70C6-429C-9AEB-5BEF3D485D4D}.Release|x86.ActiveCfg = Release|x86
 		{81857D0E-70C6-429C-9AEB-5BEF3D485D4D}.Release|x86.Build.0 = Release|x86
+		{944434C1-840B-4165-A379-986DC72E5B32}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{944434C1-840B-4165-A379-986DC72E5B32}.Debug|x86.Build.0 = Debug|Any CPU
+		{944434C1-840B-4165-A379-986DC72E5B32}.Release|x86.ActiveCfg = Release|Any CPU
+		{944434C1-840B-4165-A379-986DC72E5B32}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
