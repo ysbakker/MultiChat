@@ -669,10 +669,10 @@
             </objects>
             <point key="canvasLocation" x="75" y="250"/>
         </scene>
-        <!--View Controller-->
+        <!--Server Split Controller-->
         <scene sceneID="x9b-bk-LDV">
             <objects>
-                <splitViewController id="utb-Fg-OTK" customClass="ViewController" sceneMemberID="viewController">
+                <splitViewController id="utb-Fg-OTK" customClass="ServerSplitController" sceneMemberID="viewController">
                     <splitViewItems>
                         <splitViewItem id="hiJ-tZ-Z8U"/>
                         <splitViewItem id="5Dn-8W-mbg"/>
@@ -704,7 +704,7 @@
                         <subviews>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fgX-D6-Ey8">
                                 <rect key="frame" x="100" y="352" width="125" height="21"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Chat Server Romeo" drawsBackground="YES" id="RNx-lM-5XL">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="ChatServer" placeholderString="Romeo" drawsBackground="YES" id="RNx-lM-5XL">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -746,7 +746,7 @@
                                 <rect key="frame" x="18" y="256" width="209" height="28"/>
                                 <sliderCell key="cell" state="on" alignment="left" minValue="16" maxValue="8192" doubleValue="1106.1333333333334" tickMarkPosition="above" numberOfTickMarks="16" allowsTickMarkValuesOnly="YES" sliderType="linear" id="FrF-XP-DHC"/>
                                 <connections>
-                                    <action selector="ServerBufferSizeSliderDidChange:" target="8B1-zM-CgQ" id="645-Ij-pT0"/>
+                                    <action selector="ServerBufferSizeSliderChanged:" target="8B1-zM-CgQ" id="L1i-ny-7I9"/>
                                 </connections>
                             </slider>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dJm-A0-E9m">
@@ -756,7 +756,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="ServerStartButtonPressed:" target="8B1-zM-CgQ" id="vpr-i1-k70"/>
+                                    <action selector="ServerStartButtonPressed:" target="8B1-zM-CgQ" id="Mt0-O1-EJs"/>
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="G4a-on-PPf">
@@ -796,7 +796,7 @@
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
                                                         <tableCellView id="QRC-ay-A26">
-                                                            <rect key="frame" x="8" y="0.0" width="186" height="24"/>
+                                                            <rect key="frame" x="18" y="0.0" width="186" height="24"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R45-dA-ChE">
@@ -890,16 +890,12 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="ClientBufferSize" destination="FNj-5O-Dcp" id="9lr-eC-hcd"/>
-                        <outlet property="ClientBufferSizeSlider" destination="1aB-Wp-jyk" id="PEc-fX-Q7J"/>
-                        <outlet property="ClientName" destination="fgX-D6-Ey8" id="PhL-fy-SZm"/>
-                        <outlet property="ClientPort" destination="JaY-5A-RVJ" id="qEr-xr-Vm6"/>
                         <outlet property="ClientTitle" destination="unX-M6-aVd" id="vkV-vx-HHT"/>
-                        <outlet property="ServerBufferSize" destination="FNj-5O-Dcp" id="9Uz-C6-YJ0"/>
-                        <outlet property="ServerBufferSizeSlider" destination="1aB-Wp-jyk" id="hTy-Y6-DIG"/>
-                        <outlet property="ServerClientList" destination="uRJ-Rw-8tI" id="7H3-dF-WTb"/>
-                        <outlet property="ServerName" destination="fgX-D6-Ey8" id="4oE-Mq-iUr"/>
-                        <outlet property="ServerPort" destination="JaY-5A-RVJ" id="epj-Cf-HH7"/>
+                        <outlet property="ServerBufferSize" destination="FNj-5O-Dcp" id="2bG-Pg-SO0"/>
+                        <outlet property="ServerBufferSizeSlider" destination="1aB-Wp-jyk" id="KKm-RU-v74"/>
+                        <outlet property="ServerClientList" destination="uRJ-Rw-8tI" id="iH0-1C-018"/>
+                        <outlet property="ServerName" destination="fgX-D6-Ey8" id="wUn-6h-IHn"/>
+                        <outlet property="ServerPort" destination="JaY-5A-RVJ" id="Nfo-8e-fQh"/>
                     </connections>
                 </viewController>
                 <customObject id="CZ2-Jh-moc" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -920,7 +916,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="230" height="231"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="a6B-jz-AO1">
+                                        <textView editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" smartInsertDelete="YES" id="a6B-jz-AO1">
                                             <rect key="frame" x="0.0" y="0.0" width="230" height="231"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -947,9 +943,6 @@
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <action selector="ClientChatMessageBoxDidChange:" target="a0T-1o-Z7H" id="Phh-Xv-nCp"/>
-                                </connections>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lmk-ty-FXh">
                                 <rect key="frame" x="187" y="14" width="65" height="32"/>
@@ -961,7 +954,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="ServerChatSendButtonPressed:" target="a0T-1o-Z7H" id="vqn-oR-AVi"/>
+                                    <action selector="ServerChatSendButtonPressed:" target="a0T-1o-Z7H" id="ZhW-ck-Vde"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -981,11 +974,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="ChatMessageList" destination="O83-UG-ke8" id="caa-BU-g34"/>
-                        <outlet property="ClientChatMessageBox" destination="bR6-bH-0od" id="d4X-MU-dTl"/>
-                        <outlet property="ClientChatMessageList" destination="O83-UG-ke8" id="Plm-cj-nLB"/>
-                        <outlet property="ServerChatMessageInput" destination="bR6-bH-0od" id="Mzy-dc-8hM"/>
-                        <outlet property="ServerChatMessageList" destination="O83-UG-ke8" id="uXK-sA-Gin"/>
+                        <outlet property="ServerChatMessageInput" destination="bR6-bH-0od" id="JHt-4j-qTz"/>
+                        <outlet property="ServerChatMessageList" destination="O83-UG-ke8" id="K1K-YJ-goe"/>
                     </connections>
                 </viewController>
                 <customObject id="9hm-2R-Gfw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

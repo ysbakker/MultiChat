@@ -62,15 +62,15 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Controllers\ServerChatController.cs" />
-        <Compile Include="Controllers\ServerChatController.designer.cs">
-          <DependentUpon>ServerChatController.cs</DependentUpon>
-        </Compile>
+        <Compile Include="Controllers\ServerChatController.designer.cs" />
         <Compile Include="Controllers\ServerSettingsController.cs" />
         <Compile Include="Controllers\ServerSettingsController.designer.cs">
           <DependentUpon>ServerSettingsController.cs</DependentUpon>
         </Compile>
+        <Compile Include="Controllers\ServerSplitController.cs" />
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
+        <Compile Include="Server.cs" />
     </ItemGroup>
     <ItemGroup>
       <InterfaceDefinition Include="Main.storyboard" />

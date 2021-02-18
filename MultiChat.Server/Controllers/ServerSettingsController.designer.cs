@@ -36,16 +36,6 @@ namespace MultiChat.Server.Controllers
 
 		void ReleaseDesignerOutlets ()
 		{
-			if (ServerName != null) {
-				ServerName.Dispose ();
-				ServerName = null;
-			}
-
-			if (ServerPort != null) {
-				ServerPort.Dispose ();
-				ServerPort = null;
-			}
-
 			if (ServerBufferSize != null) {
 				ServerBufferSize.Dispose ();
 				ServerBufferSize = null;
@@ -59,6 +49,16 @@ namespace MultiChat.Server.Controllers
 			if (ServerClientList != null) {
 				ServerClientList.Dispose ();
 				ServerClientList = null;
+			}
+
+			if (ServerName != null) {
+				ServerName.Dispose ();
+				ServerName = null;
+			}
+
+			if (ServerPort != null) {
+				ServerPort.Dispose ();
+				ServerPort = null;
 			}
 
 		}
