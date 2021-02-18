@@ -10,40 +10,54 @@ namespace MultiChat.Server
 {
     public class Server
     {
-        private readonly ConnectionSettingsModel _connectionSettings;
-        private TcpListener _listener;
-        private IList<ChatClient> _clients;
-        
-        public Server(ConnectionSettingsModel connectionSettings)
+        public bool Running { get; private set; }
+        private ConnectionSettingsModel ConnectionSettings { get; set; }
+        private TcpListener Listener { get; set; }
+        private IList<ChatClient> Clients { get; set; }
+
+        public Server()
         {
-            _connectionSettings = connectionSettings;
-            _clients = new List<ChatClient>();
+            Clients = new List<ChatClient>();
+            Running = false;
         }
 
-        public void Start()
+        public void Start(ConnectionSettingsModel settings)
         {
-            _listener = new TcpListener(_connectionSettings.IPAddress, _connectionSettings.Port);
-            _listener.Start();
-            AcceptConnections();
+            ConnectionSettings = settings;
+            Listener = new TcpListener(settings.IPAddress, settings.Port);
+            Listener.Start();
+            Running = true;
         }
 
-        private async void AcceptConnections()
+        public async Task Listen(CancellationToken token)
         {
-            Action<string> messageHandler = async message =>
+            token.Register(() => Listener.Stop());
+            await AcceptConnections(token);
+        }
+
+        public void Stop()
+        {
+            Running = false;
+        }
+
+        private async Task AcceptConnections(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
             {
-                var outgoingMessages = new List<Task>();
-                foreach (ChatClient client in _clients)
+                try
                 {
-                    outgoingMessages.Add(client.WriteAsync(message));
+                    var tcpClient = await Listener.AcceptTcpClientAsync();
+                    var chatClient = new ChatClient(tcpClient);
+                    Clients.Add(chatClient);
                 }
-                await Task.WhenAll(outgoingMessages);
-            };
-            while (true)
-            {
-                var tcpClient = await _listener.AcceptTcpClientAsync();
-                var chatClient = new ChatClient(tcpClient);
-                chatClient.ReadAsync(messageHandler, 100);
-                _clients.Add(chatClient);
+                catch (SocketException)
+                {
+                    Console.WriteLine("Oopsie listener was closed :(");
+                }
+                catch (ObjectDisposedException)
+                {
+                    Console.WriteLine("Oopsie object was disposed :(");
+                }
             }
         }
     }

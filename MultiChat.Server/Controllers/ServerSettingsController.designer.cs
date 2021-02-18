@@ -28,6 +28,9 @@ namespace MultiChat.Server.Controllers
 		[Outlet]
 		AppKit.NSTextField ServerPort { get; set; }
 
+		[Outlet]
+		AppKit.NSButton ServerStartButton { get; set; }
+
 		[Action ("ServerBufferSizeSliderChanged:")]
 		partial void ServerBufferSizeSliderChanged (AppKit.NSSlider sender);
 
@@ -59,6 +62,11 @@ namespace MultiChat.Server.Controllers
 			if (ServerPort != null) {
 				ServerPort.Dispose ();
 				ServerPort = null;
+			}
+
+			if (ServerStartButton != null) {
+				ServerStartButton.Dispose ();
+				ServerStartButton = null;
 			}
 
 		}

@@ -876,9 +876,9 @@
                             <constraint firstItem="IJJ-Un-cCA" firstAttribute="top" secondItem="5b2-1f-ykA" secondAttribute="bottom" constant="8" symbolic="YES" id="ZGV-pM-JPm"/>
                             <constraint firstAttribute="trailing" secondItem="fgX-D6-Ey8" secondAttribute="trailing" constant="20" symbolic="YES" id="dpn-Ng-WMt"/>
                             <constraint firstItem="7g0-CV-JJc" firstAttribute="leading" secondItem="Pwn-Rd-tsf" secondAttribute="leading" constant="66" id="eeo-Qa-aYN"/>
-                            <constraint firstItem="dJm-A0-E9m" firstAttribute="top" secondItem="1aB-Wp-jyk" secondAttribute="bottom" constant="20" symbolic="YES" id="fi2-rc-QMr"/>
+                            <constraint firstItem="dJm-A0-E9m" firstAttribute="top" secondItem="1aB-Wp-jyk" secondAttribute="bottom" constant="8" symbolic="YES" id="fi2-rc-QMr"/>
                             <constraint firstItem="IJJ-Un-cCA" firstAttribute="top" secondItem="5b2-1f-ykA" secondAttribute="bottom" constant="8" symbolic="YES" id="g2V-d2-ndP"/>
-                            <constraint firstItem="03f-S2-ko8" firstAttribute="top" secondItem="dJm-A0-E9m" secondAttribute="bottom" constant="20" symbolic="YES" id="gNJ-EN-utO"/>
+                            <constraint firstItem="03f-S2-ko8" firstAttribute="top" secondItem="dJm-A0-E9m" secondAttribute="bottom" constant="8" symbolic="YES" id="gNJ-EN-utO"/>
                             <constraint firstAttribute="trailing" secondItem="FNj-5O-Dcp" secondAttribute="trailing" constant="20" symbolic="YES" id="hRT-ZI-DSj"/>
                             <constraint firstItem="S9Y-5z-XyN" firstAttribute="top" secondItem="7g0-CV-JJc" secondAttribute="bottom" constant="15" id="kYU-Sg-NEV"/>
                             <constraint firstItem="fgX-D6-Ey8" firstAttribute="top" secondItem="unX-M6-aVd" secondAttribute="bottom" constant="5" id="lKn-ms-kL1"/>
@@ -896,6 +896,7 @@
                         <outlet property="ServerClientList" destination="uRJ-Rw-8tI" id="iH0-1C-018"/>
                         <outlet property="ServerName" destination="fgX-D6-Ey8" id="wUn-6h-IHn"/>
                         <outlet property="ServerPort" destination="JaY-5A-RVJ" id="Nfo-8e-fQh"/>
+                        <outlet property="ServerStartButton" destination="dJm-A0-E9m" id="T0z-1T-oPC"/>
                     </connections>
                 </viewController>
                 <customObject id="CZ2-Jh-moc" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

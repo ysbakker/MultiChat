@@ -20,6 +20,12 @@ namespace MultiChat.Server.Controllers
             var msg = new NSAttributedString(message + "\n", foregroundColor: NSColor.LabelColor);
             textView?.TextStorage.Append(msg);
         }
+        internal void AppendMessage(string message, NSColor color)
+        {
+            var textView = (NSTextView) ServerChatMessageList.DocumentView;
+            var msg = new NSAttributedString(message + "\n", foregroundColor: color);
+            textView?.TextStorage.Append(msg);
+        }
 
         public override void ViewDidLoad()
         {
