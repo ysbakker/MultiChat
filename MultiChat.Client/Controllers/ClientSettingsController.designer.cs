@@ -28,6 +28,9 @@ namespace MultiChat.Client.Controllers
 		[Outlet]
 		AppKit.NSTextField ClientPort { get; set; }
 
+		[Action ("ClientBufferSizeChanged:")]
+		partial void ClientBufferSizeChanged (AppKit.NSTextField sender);
+
 		[Action ("ClientBufferSizeSliderChanged:")]
 		partial void ClientBufferSizeSliderChanged (AppKit.NSSlider sender);
 

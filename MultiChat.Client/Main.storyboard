@@ -768,6 +768,9 @@
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <action selector="ClientBufferSizeChanged:" target="8B1-zM-CgQ" id="Vgq-GS-wfu"/>
+                                </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JaY-5A-RVJ">
                                 <rect key="frame" x="100" y="204" width="97" height="21"/>
@@ -779,9 +782,9 @@
                             </textField>
                             <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1aB-Wp-jyk">
                                 <rect key="frame" x="18" y="139" width="181" height="28"/>
-                                <sliderCell key="cell" state="on" alignment="left" minValue="16" maxValue="8192" doubleValue="1106.1333333333334" tickMarkPosition="above" numberOfTickMarks="16" allowsTickMarkValuesOnly="YES" sliderType="linear" id="FrF-XP-DHC"/>
+                                <sliderCell key="cell" state="on" alignment="left" minValue="512" maxValue="8192" doubleValue="1024" tickMarkPosition="above" numberOfTickMarks="16" allowsTickMarkValuesOnly="YES" sliderType="linear" id="FrF-XP-DHC"/>
                                 <connections>
-                                    <action selector="ClientBufferSizeSliderDidChange:" target="8B1-zM-CgQ" id="BDJ-ak-bxn"/>
+                                    <action selector="ClientBufferSizeSliderChanged:" target="8B1-zM-CgQ" id="Ksg-RL-8yu"/>
                                 </connections>
                             </slider>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dJm-A0-E9m">
