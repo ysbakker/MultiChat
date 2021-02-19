@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using AppKit;
-using CoreText;
-using Foundation;
 using MultiChat.Common.Models;
 
 namespace MultiChat.Server.Controllers
@@ -42,7 +38,7 @@ namespace MultiChat.Server.Controllers
                 ServerStartButton.Enabled = true;
                 ChatController.AppendMessage(
                     $"~ Server \"{ServerName.StringValue}\" started listening on port {ServerPort.IntValue}.",
-                    NSColor.Green);
+                    NSColor.SystemGreenColor);
                 ServerStartButton.Title = "Stop";
                 ServerStatusImage.Image = NSImage.ImageNamed(NSImageName.StatusAvailable);
                 ServerStatusText.StringValue = "Server running";
@@ -58,7 +54,7 @@ namespace MultiChat.Server.Controllers
                 ServerCancellationTokenSource.Dispose();
                 
                 ServerStartButton.Enabled = true;
-                ChatController.AppendMessage($"~ Server \"{ServerName.StringValue}\" stopped.", NSColor.Red);
+                ChatController.AppendMessage($"~ Server \"{ServerName.StringValue}\" stopped.", NSColor.SystemRedColor);
                 ServerStartButton.Title = "Start";
                 ServerStatusImage.Image = NSImage.ImageNamed(NSImageName.StatusUnavailable);
                 ServerStatusText.StringValue = "Server stopped";
