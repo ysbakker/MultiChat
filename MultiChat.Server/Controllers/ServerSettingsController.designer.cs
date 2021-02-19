@@ -31,6 +31,9 @@ namespace MultiChat.Server.Controllers
 		[Outlet]
 		AppKit.NSButton ServerStartButton { get; set; }
 
+		[Action ("ServerBufferSizeChanged:")]
+		partial void ServerBufferSizeChanged (AppKit.NSTextField sender);
+
 		[Action ("ServerBufferSizeSliderChanged:")]
 		partial void ServerBufferSizeSliderChanged (AppKit.NSSlider sender);
 

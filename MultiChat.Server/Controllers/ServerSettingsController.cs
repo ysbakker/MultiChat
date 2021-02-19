@@ -32,7 +32,7 @@ namespace MultiChat.Server.Controllers
                 Server.Start(settings);
                 
                 ChatController.AppendMessage(
-                    $"* Server \"{ServerName.StringValue}\" started listening on port {ServerPort.IntValue}.",
+                    $"~ Server \"{ServerName.StringValue}\" started listening on port {ServerPort.IntValue}.",
                     NSColor.Green);
                 ServerStartButton.Title = "Stop";
                 ServerStartButton.Enabled = true;
@@ -43,10 +43,21 @@ namespace MultiChat.Server.Controllers
             {
                 Server.Stop();
                 ServerCancellationTokenSource.Cancel();
-                ChatController.AppendMessage($"* Server \"{ServerName.StringValue}\" stopped.", NSColor.Red);
+                ChatController.AppendMessage($"~ Server \"{ServerName.StringValue}\" stopped.", NSColor.Red);
                 ServerStartButton.Title = "Start";
                 ServerCancellationTokenSource.Dispose();
             }
         }
+
+        partial void ServerBufferSizeSliderChanged(NSSlider sender)
+        {
+            ServerBufferSize.IntValue = sender.IntValue;
+        }
+
+        partial void ServerBufferSizeChanged(NSTextField sender)
+        {
+            ServerBufferSizeSlider.IntValue = sender.IntValue;
+        }
+
     }
 }
