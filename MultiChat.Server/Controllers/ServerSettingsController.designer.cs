@@ -31,6 +31,12 @@ namespace MultiChat.Server.Controllers
 		[Outlet]
 		AppKit.NSButton ServerStartButton { get; set; }
 
+		[Outlet]
+		AppKit.NSImageView ServerStatusImage { get; set; }
+
+		[Outlet]
+		AppKit.NSTextField ServerStatusText { get; set; }
+
 		[Action ("ServerBufferSizeChanged:")]
 		partial void ServerBufferSizeChanged (AppKit.NSTextField sender);
 
@@ -70,6 +76,16 @@ namespace MultiChat.Server.Controllers
 			if (ServerStartButton != null) {
 				ServerStartButton.Dispose ();
 				ServerStartButton = null;
+			}
+
+			if (ServerStatusText != null) {
+				ServerStatusText.Dispose ();
+				ServerStatusText = null;
+			}
+
+			if (ServerStatusImage != null) {
+				ServerStatusImage.Dispose ();
+				ServerStatusImage = null;
 			}
 
 		}

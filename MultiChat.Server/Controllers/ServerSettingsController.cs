@@ -20,6 +20,13 @@ namespace MultiChat.Server.Controllers
             Server = new Server();
         }
 
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            ServerStatusImage.Image = NSImage.ImageNamed(NSImageName.StatusUnavailable);
+            ServerStatusText.StringValue = "Server stopped";
+        }
+
         async partial void ServerStartButtonPressed(NSButton sender)
         {
             var settings =
@@ -28,24 +35,33 @@ namespace MultiChat.Server.Controllers
             if (!Server.Running)
             {
                 ServerStartButton.Enabled = false;
+                
                 ServerCancellationTokenSource = new CancellationTokenSource();
                 Server.Start(settings);
                 
+                ServerStartButton.Enabled = true;
                 ChatController.AppendMessage(
                     $"~ Server \"{ServerName.StringValue}\" started listening on port {ServerPort.IntValue}.",
                     NSColor.Green);
                 ServerStartButton.Title = "Stop";
-                ServerStartButton.Enabled = true;
+                ServerStatusImage.Image = NSImage.ImageNamed(NSImageName.StatusAvailable);
+                ServerStatusText.StringValue = "Server running";
                 
                 await Server.Listen(ServerCancellationTokenSource.Token);
             }
             else
             {
+                ServerStartButton.Enabled = false;
+                
                 Server.Stop();
                 ServerCancellationTokenSource.Cancel();
+                ServerCancellationTokenSource.Dispose();
+                
+                ServerStartButton.Enabled = true;
                 ChatController.AppendMessage($"~ Server \"{ServerName.StringValue}\" stopped.", NSColor.Red);
                 ServerStartButton.Title = "Start";
-                ServerCancellationTokenSource.Dispose();
+                ServerStatusImage.Image = NSImage.ImageNamed(NSImageName.StatusUnavailable);
+                ServerStatusText.StringValue = "Server stopped";
             }
         }
 

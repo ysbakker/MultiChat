@@ -845,6 +845,9 @@
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="7pX-ls-UcM">
                                 <rect key="frame" x="20" y="239" width="16" height="16"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSStatusNone" id="Rw4-SO-N3Q"/>
+                                <connections>
+                                    <action selector="ServerStatusImage:" target="8B1-zM-CgQ" id="HyR-2x-iEj"/>
+                                </connections>
                             </imageView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WfK-RZ-cJg">
                                 <rect key="frame" x="39" y="239" width="156" height="16"/>
@@ -938,6 +941,8 @@
                         <outlet property="ServerName" destination="fgX-D6-Ey8" id="wUn-6h-IHn"/>
                         <outlet property="ServerPort" destination="JaY-5A-RVJ" id="Nfo-8e-fQh"/>
                         <outlet property="ServerStartButton" destination="dJm-A0-E9m" id="T0z-1T-oPC"/>
+                        <outlet property="ServerStatusImage" destination="7pX-ls-UcM" id="BTC-hO-V4I"/>
+                        <outlet property="ServerStatusText" destination="WfK-RZ-cJg" id="rM2-v3-Xav"/>
                     </connections>
                 </viewController>
                 <customObject id="CZ2-Jh-moc" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
