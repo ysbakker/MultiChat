@@ -22,10 +22,10 @@ namespace MultiChat.Server.Controllers
             var textView = (NSTextView) ServerChatMessageList.DocumentView;
             var msg = new NSAttributedString(message + "\n", foregroundColor: color);
             textView?.TextStorage.Append(msg);
-            nfloat scrollPostitionX = 0;
+            nfloat scrollPositionX = 0;
             nfloat scrollPositionY = ((NSView) ServerChatMessageList.DocumentView).Frame.Size.Height -
                                      ServerChatMessageList.ContentSize.Height;
-            var scrollPoint = new CGPoint(scrollPostitionX, scrollPositionY);
+            var scrollPoint = new CGPoint(scrollPositionX, scrollPositionY);
             ServerChatMessageList.ContentView.ScrollToPoint(scrollPoint);
         }
     }
