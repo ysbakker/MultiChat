@@ -21,6 +21,7 @@ namespace MultiChat.Server.Controllers
             _settingsController = (ServerSettingsController)SplitViewItems[0].ViewController;
             _chatController = (ServerChatController)SplitViewItems[1].ViewController;
             _settingsController.ChatController = _chatController;
+            _chatController.SettingsController = _settingsController;
         }
     }
 }

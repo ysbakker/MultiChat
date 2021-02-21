@@ -14,14 +14,12 @@ namespace MultiChat.Server
         private ConnectionSettingsModel ConnectionSettings { get; set; }
         private TcpListener Listener { get; set; }
         private IList<ChatClient> Clients { get; set; }
-        private ChatClient ServerClient { get; set; }
-        private Action<string> ReceiveMessageHandler { get; set; }
+        public ChatClient ServerClient { get; set; }
 
-        public Server(Action<string> receiveMessageHandler)
+        public Server()
         {
             Clients = new List<ChatClient>();
             ServerClient = new ChatClient(new TcpClient());
-            ReceiveMessageHandler = receiveMessageHandler;
             Running = false;
         }
 
@@ -33,10 +31,10 @@ namespace MultiChat.Server
             Running = true;
         }
 
-        public async Task Listen(CancellationToken token)
+        public async Task Listen(CancellationToken token, Action<string> receiveMessageHandler)
         {
             token.Register(() => Listener.Stop());
-            await AcceptConnections(token);
+            await AcceptConnections(token, receiveMessageHandler);
         }
 
         public void Stop()
@@ -44,7 +42,7 @@ namespace MultiChat.Server
             Running = false;
         }
 
-        private async Task AcceptConnections(CancellationToken token)
+        private async Task AcceptConnections(CancellationToken token, Action<string> receiveMessageHandler)
         {
             while (!token.IsCancellationRequested)
             {
@@ -53,7 +51,8 @@ namespace MultiChat.Server
                     var tcpClient = await Listener.AcceptTcpClientAsync();
                     var chatClient = new ChatClient(tcpClient);
                     Clients.Add(chatClient);
-                    chatClient.ReadAsync(async message => { await BroadcastMessage(chatClient, message); }, 1024);
+                    chatClient.ReadAsync(
+                        async message => { await BroadcastMessage(chatClient, message, receiveMessageHandler); }, 1024);
                 }
                 catch (SocketException)
                 {
@@ -66,16 +65,9 @@ namespace MultiChat.Server
             }
         }
 
-        public async Task BroadcastMessage(ChatClient initiator, string message)
+        public async Task BroadcastMessage(ChatClient initiator, string message, Action<string> receiveMessageHandler)
         {
-            if (initiator.Equals(ServerClient))
-            {
-                ReceiveMessageHandler($"<< {message}");
-            }
-            else
-            {
-                ReceiveMessageHandler($">> {message}");
-            }
+            receiveMessageHandler(initiator.Equals(ServerClient) ? $"<< {message}" : $">> {message}");
 
             IList<Task> sendQueue = new List<Task>();
             foreach (ChatClient client in Clients)

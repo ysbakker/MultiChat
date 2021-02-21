@@ -8,12 +8,12 @@ namespace MultiChat.Server.Controllers
     public partial class ServerSettingsController : NSViewController
     {
         public ServerChatController ChatController { private get; set; }
-        private Server Server { get; set; }
+        public Server Server { get; set; }
         private CancellationTokenSource ServerCancellationTokenSource { get; set; }
 
         public ServerSettingsController(IntPtr handle) : base(handle)
         {
-            Server = new Server(ChatController.AppendMessage);
+            Server = new Server();
         }
 
         public override void ViewDidLoad()
@@ -31,10 +31,10 @@ namespace MultiChat.Server.Controllers
             if (!Server.Running)
             {
                 ServerStartButton.Enabled = false;
-                
+
                 ServerCancellationTokenSource = new CancellationTokenSource();
                 Server.Start(settings);
-                
+
                 ServerStartButton.Enabled = true;
                 ChatController.AppendMessage(
                     $"~ Server \"{ServerName.StringValue}\" started listening on port {ServerPort.IntValue}.",
@@ -42,17 +42,17 @@ namespace MultiChat.Server.Controllers
                 ServerStartButton.Title = "Stop";
                 ServerStatusImage.Image = NSImage.ImageNamed(NSImageName.StatusAvailable);
                 ServerStatusText.StringValue = "Server running";
-                
-                await Server.Listen(ServerCancellationTokenSource.Token);
+
+                await Server.Listen(ServerCancellationTokenSource.Token, ChatController.AppendMessage);
             }
             else
             {
                 ServerStartButton.Enabled = false;
-                
+
                 Server.Stop();
                 ServerCancellationTokenSource.Cancel();
                 ServerCancellationTokenSource.Dispose();
-                
+
                 ServerStartButton.Enabled = true;
                 ChatController.AppendMessage($"~ Server \"{ServerName.StringValue}\" stopped.", NSColor.SystemRedColor);
                 ServerStartButton.Title = "Start";
@@ -70,6 +70,5 @@ namespace MultiChat.Server.Controllers
         {
             ServerBufferSizeSlider.IntValue = sender.IntValue;
         }
-
     }
 }
