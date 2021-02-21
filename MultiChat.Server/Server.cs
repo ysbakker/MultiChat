@@ -14,10 +14,14 @@ namespace MultiChat.Server
         private ConnectionSettingsModel ConnectionSettings { get; set; }
         private TcpListener Listener { get; set; }
         private IList<ChatClient> Clients { get; set; }
+        private ChatClient ServerClient { get; set; }
+        private Action<string> ReceiveMessageHandler { get; set; }
 
-        public Server()
+        public Server(Action<string> receiveMessageHandler)
         {
             Clients = new List<ChatClient>();
+            ServerClient = new ChatClient(new TcpClient());
+            ReceiveMessageHandler = receiveMessageHandler;
             Running = false;
         }
 
@@ -49,6 +53,7 @@ namespace MultiChat.Server
                     var tcpClient = await Listener.AcceptTcpClientAsync();
                     var chatClient = new ChatClient(tcpClient);
                     Clients.Add(chatClient);
+                    chatClient.ReadAsync(async message => { await BroadcastMessage(chatClient, message); }, 1024);
                 }
                 catch (SocketException)
                 {
@@ -59,6 +64,26 @@ namespace MultiChat.Server
                     Console.WriteLine("Oopsie object was disposed :(");
                 }
             }
+        }
+
+        public async Task BroadcastMessage(ChatClient initiator, string message)
+        {
+            if (initiator.Equals(ServerClient))
+            {
+                ReceiveMessageHandler($"<< {message}");
+            }
+            else
+            {
+                ReceiveMessageHandler($">> {message}");
+            }
+
+            IList<Task> sendQueue = new List<Task>();
+            foreach (ChatClient client in Clients)
+            {
+                sendQueue.Add(client.WriteAsync(message));
+            }
+
+            await Task.WhenAll(sendQueue);
         }
     }
 }

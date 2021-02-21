@@ -18,14 +18,14 @@ namespace MultiChat.Common
             Client = client;
         }
 
-        public async Task Connect(ConnectionSettingsModel connectionSettings)
+        public async Task ConnectAsync(ConnectionSettingsModel connectionSettings)
         {
             Name = connectionSettings.Name;
             BufferSize = connectionSettings.BufferSize;
             await Client.ConnectAsync(connectionSettings.IPAddress, connectionSettings.Port);
         }
 
-        public async void ReadAsync(Action<string> messageHandler, int bufferSize)
+        public async void ReadAsync(Func<string, Task> messageHandler, int bufferSize)
         {
             var buffer = new byte[bufferSize];
             await using var stream = Client.GetStream();
@@ -34,7 +34,7 @@ namespace MultiChat.Common
                 var readBytes = await stream.ReadAsync(buffer, 0, buffer.Length);
                 if (readBytes == 0) continue;
                 var message = Encoding.Unicode.GetString(buffer);
-                messageHandler(message);
+                await messageHandler(message);
             }
         }
 

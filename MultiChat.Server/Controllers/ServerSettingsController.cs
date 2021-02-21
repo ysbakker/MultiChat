@@ -13,7 +13,7 @@ namespace MultiChat.Server.Controllers
 
         public ServerSettingsController(IntPtr handle) : base(handle)
         {
-            Server = new Server();
+            Server = new Server(ChatController.AppendMessage);
         }
 
         public override void ViewDidLoad()

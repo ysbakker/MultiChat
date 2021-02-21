@@ -793,6 +793,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="ClientConnectButtonPressed:" target="8B1-zM-CgQ" id="Rme-9I-z1O"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>

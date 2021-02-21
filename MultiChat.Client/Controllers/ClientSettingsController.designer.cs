@@ -34,6 +34,9 @@ namespace MultiChat.Client.Controllers
 		[Action ("ClientBufferSizeSliderChanged:")]
 		partial void ClientBufferSizeSliderChanged (AppKit.NSSlider sender);
 
+		[Action ("ClientConnectButtonPressed:")]
+		partial void ClientConnectButtonPressed (AppKit.NSButton sender);
+
 		void ReleaseDesignerOutlets ()
 		{
 			if (ClientBufferSize != null) {
