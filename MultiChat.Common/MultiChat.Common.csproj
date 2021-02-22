@@ -44,7 +44,6 @@
         <Reference Include="Xamarin.Mac" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="ChatClient.cs" />
         <Compile Include="Models\ConnectionSettingsModel.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>

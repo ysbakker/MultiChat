@@ -61,16 +61,8 @@
         <None Include="Entitlements.plist" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Controllers\ServerChatController.cs" />
-        <Compile Include="Controllers\ServerChatController.designer.cs" />
-        <Compile Include="Controllers\ServerSettingsController.cs" />
-        <Compile Include="Controllers\ServerSettingsController.designer.cs">
-          <DependentUpon>ServerSettingsController.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Controllers\ServerSplitController.cs" />
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
-        <Compile Include="Server.cs" />
         <Compile Include="ServerController.cs" />
         <Compile Include="ServerController.designer.cs">
           <DependentUpon>ServerController.cs</DependentUpon>

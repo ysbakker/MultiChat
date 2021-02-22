@@ -68,15 +68,6 @@
         <Compile Include="ClientController.designer.cs">
           <DependentUpon>ClientController.cs</DependentUpon>
         </Compile>
-        <Compile Include="Controllers\ClientSplitController.cs" />
-        <Compile Include="Controllers\ClientChatController.cs" />
-        <Compile Include="Controllers\ClientChatController.designer.cs">
-          <DependentUpon>ClientChatController.cs</DependentUpon>
-        </Compile>
-        <Compile Include="Controllers\ClientSettingsController.cs" />
-        <Compile Include="Controllers\ClientSettingsController.designer.cs">
-          <DependentUpon>ClientSettingsController.cs</DependentUpon>
-        </Compile>
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
     </ItemGroup>
