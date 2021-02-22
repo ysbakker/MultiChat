@@ -43,7 +43,9 @@ namespace MultiChat.Client
 
         async partial void SendButtonPressed(NSObject sender)
         {
-            await WriteAsync(ChatMessageInput.StringValue);
+            var message = $"{ClientName}: {ChatMessageInput.StringValue}";
+            await WriteAsync(message);
+            AppendMessage(message, NSColor.SystemBlueColor);
         }
 
         private async Task ReadAsync(CancellationToken token)
@@ -79,7 +81,7 @@ namespace MultiChat.Client
         private async Task WriteAsync(string message)
         {
             var stream = Client.GetStream();
-            var bytes = Encoding.Unicode.GetBytes($"{ClientName}: {message}");
+            var bytes = Encoding.Unicode.GetBytes(message);
             await stream.WriteAsync(bytes, 0, bytes.Length);
         }
         

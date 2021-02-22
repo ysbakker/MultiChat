@@ -96,6 +96,7 @@ namespace MultiChat.Server
                 } while (stream.DataAvailable);
 
                 AppendMessage(message.ToString());
+                await BroadcastMessage(message.ToString(), client);
             }
         }
 
@@ -121,14 +122,17 @@ namespace MultiChat.Server
 
         async partial void SendButtonPressed(NSObject sender)
         {
-            await BroadcastMessage(ChatMessageInput.StringValue);
+            var message = $"Server: {ChatMessageInput.StringValue}";
+            await BroadcastMessage(message, null);
+            AppendMessage(message, NSColor.SystemBlueColor);
         }
 
-        private async Task BroadcastMessage(string message)
+        private async Task BroadcastMessage(string message, TcpClient sender)
         {
             IList<Task> queue = new List<Task>();
             foreach (var client in Clients)
             {
+                if (client.Equals(sender)) continue;
                 queue.Add(WriteAsync(client, message));
             }
 
