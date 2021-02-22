@@ -25,7 +25,7 @@ namespace MultiChat.Common
             await Client.ConnectAsync(connectionSettings.IPAddress, connectionSettings.Port);
         }
 
-        public async void ReadAsync(Func<string, Task> messageHandler, int bufferSize)
+        public async Task ReadAsync(Func<string, Task> messageHandler, int bufferSize)
         {
             var buffer = new byte[bufferSize];
             await using var stream = Client.GetStream();
@@ -47,7 +47,7 @@ namespace MultiChat.Common
 
         public void Dispose()
         {
-            Client.Dispose();
+            // Client.Dispose();
         }
     }
 }

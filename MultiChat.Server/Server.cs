@@ -51,8 +51,9 @@ namespace MultiChat.Server
                     var tcpClient = await Listener.AcceptTcpClientAsync();
                     var chatClient = new ChatClient(tcpClient);
                     Clients.Add(chatClient);
-                    chatClient.ReadAsync(
-                        async message => { await BroadcastMessage(chatClient, message, receiveMessageHandler); }, 1024);
+                    await chatClient.ReadAsync(
+                        async message => { await BroadcastMessage(chatClient, message, receiveMessageHandler); },
+                        1024);
                 }
                 catch (SocketException)
                 {

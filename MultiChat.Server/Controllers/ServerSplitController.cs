@@ -8,8 +8,8 @@ namespace MultiChat.Server.Controllers
     [Register("ServerSplitController")]
     public partial class ServerSplitController : NSSplitViewController
     {
-        private ServerSettingsController _settingsController { get; set; }
-        private ServerChatController _chatController { get; set; } 
+        private ServerSettingsController SettingsController { get; set; }
+        private ServerChatController ChatController { get; set; } 
         
         public ServerSplitController(IntPtr handle) : base(handle)
         {
@@ -18,10 +18,10 @@ namespace MultiChat.Server.Controllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            _settingsController = (ServerSettingsController)SplitViewItems[0].ViewController;
-            _chatController = (ServerChatController)SplitViewItems[1].ViewController;
-            _settingsController.ChatController = _chatController;
-            _chatController.SettingsController = _settingsController;
+            SettingsController = (ServerSettingsController)SplitViewItems[0].ViewController;
+            ChatController = (ServerChatController)SplitViewItems[1].ViewController;
+            SettingsController.ChatController = ChatController;
+            ChatController.SettingsController = SettingsController;
         }
     }
 }

@@ -64,6 +64,11 @@
         <None Include="Entitlements.plist" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="ClientController.cs" />
+        <Compile Include="ClientController.designer.cs">
+          <DependentUpon>ClientController.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Controllers\ClientSplitController.cs" />
         <Compile Include="Controllers\ClientChatController.cs" />
         <Compile Include="Controllers\ClientChatController.designer.cs">
           <DependentUpon>ClientChatController.cs</DependentUpon>

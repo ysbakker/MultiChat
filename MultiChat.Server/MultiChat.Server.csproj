@@ -71,6 +71,11 @@
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
         <Compile Include="Server.cs" />
+        <Compile Include="ServerController.cs" />
+        <Compile Include="ServerController.designer.cs">
+          <DependentUpon>ServerController.cs</DependentUpon>
+        </Compile>
+        <Compile Include="ServerStatus.cs" />
     </ItemGroup>
     <ItemGroup>
       <InterfaceDefinition Include="Main.storyboard" />

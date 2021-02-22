@@ -9,6 +9,8 @@ namespace MultiChat.Client.Controllers
 {
     public partial class ClientSettingsController : NSViewController
     {
+        public ClientChatController ChatController { private get; set; }
+
         private ChatClient Client { get; set; }
 
         public ClientSettingsController(IntPtr handle) : base(handle)
