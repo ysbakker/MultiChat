@@ -119,6 +119,11 @@ namespace MultiChat.Server
             }
         }
 
+        async partial void SendButtonPressed(NSObject sender)
+        {
+            await BroadcastMessage(ChatMessageInput.StringValue);
+        }
+
         private async Task BroadcastMessage(string message)
         {
             IList<Task> queue = new List<Task>();
