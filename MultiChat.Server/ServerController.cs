@@ -91,12 +91,18 @@ namespace MultiChat.Server
                 do
                 {
                     var buffer = new byte[bufferSize];
-                    await stream.ReadAsync(buffer, 0, bufferSize, token);
-                    message.Append(Encoding.Unicode.GetString(buffer));
+                    int bytesRead = await stream.ReadAsync(buffer, 0, bufferSize, token);
+                    if (bytesRead > 0)
+                    {
+                        message.Append(Encoding.Unicode.GetString(buffer));
+                    }
                 } while (stream.DataAvailable);
 
-                AppendMessage(message.ToString());
-                await BroadcastMessage(message.ToString(), client);
+                if (!string.IsNullOrEmpty(message.ToString()))
+                {
+                    AppendMessage(message.ToString());
+                    await BroadcastMessage(message.ToString(), client);
+                }
             }
         }
 
