@@ -55,18 +55,18 @@ namespace MultiChat.Server
                     var client = await Server.AcceptTcpClientAsync();
                     AppendMessage("New client connected!");
                     Clients.Add(client);
-                    await ReadAsync(client, token);
-                }
-                catch (SocketException)
-                {
-                    // TODO: Better exception handling
-                    Console.WriteLine("Something went wrong in the socket");
+                    ReadAsync(client, token);
                 }
                 catch (ObjectDisposedException)
                 {
                     // TODO: Better exception handling
                     // This happens when the server is stopped
                     Console.WriteLine("TcpListener was disposed");
+                }
+                catch (SocketException)
+                {
+                    // TODO: Better exception handling
+                    Console.WriteLine("Something went wrong in the socket");
                 }
                 catch (InvalidOperationException)
                 {
@@ -81,27 +81,37 @@ namespace MultiChat.Server
             }
         }
 
-        private async Task ReadAsync(TcpClient client, CancellationToken token)
+        private async void ReadAsync(TcpClient client, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                var bufferSize = 1024;
-                var stream = client.GetStream();
-                StringBuilder message = new StringBuilder();
-                do
+                try
                 {
-                    var buffer = new byte[bufferSize];
-                    int bytesRead = await stream.ReadAsync(buffer, 0, bufferSize, token);
-                    if (bytesRead > 0)
+                    var bufferSize = 1024;
+                    var stream = client.GetStream();
+                    var message = new StringBuilder();
+                    do
                     {
-                        message.Append(Encoding.Unicode.GetString(buffer));
-                    }
-                } while (stream.DataAvailable);
+                        var buffer = new byte[bufferSize];
+                        int bytesRead = await stream.ReadAsync(buffer, 0, bufferSize, token);
+                        if (bytesRead > 0)
+                        {
+                            message.Append(Encoding.Unicode.GetString(buffer));
+                        }
+                    } while (stream.DataAvailable);
 
-                if (!string.IsNullOrEmpty(message.ToString()))
-                {
+                    if (string.IsNullOrEmpty(message.ToString())) continue;
                     AppendMessage(message.ToString());
                     await BroadcastMessage(message.ToString(), client);
+                }
+                catch (Exception ex) when (ex is InvalidOperationException || ex is ObjectDisposedException || ex is IOException)
+                {
+                    // TODO
+                    // The client is no longer connected properly
+                    DisplayError("Client lost connection.");
+                    client.Dispose();
+                    Clients.Remove(client);
+                    return;
                 }
             }
         }
@@ -194,6 +204,17 @@ namespace MultiChat.Server
                 default:
                     return;
             }
+        }
+
+        private void DisplayError(string message)
+        {
+            var alert = new NSAlert()
+            {
+                AlertStyle = NSAlertStyle.Critical,
+                InformativeText = message ?? "Something went wrong.",
+                MessageText = "Error occured"
+            };
+            alert.RunModal();
         }
 
         partial void BufferSizeSliderChanged(NSObject sender)
