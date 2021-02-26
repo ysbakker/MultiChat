@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AppKit;
@@ -28,6 +27,13 @@ namespace MultiChat.Server
             Clients = new ObservableCollection<TcpClient>();
             Clients.CollectionChanged += UpdateClientList;
             ServerStatus = ServerStatus.Stopped;
+        }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            SendButton.Enabled = false;
+            ChatMessageInput.Enabled = false;
         }
 
         async partial void StartButtonPressed(NSObject sender)
@@ -197,25 +203,37 @@ namespace MultiChat.Server
                     StartButton.Enabled = false;
                     StatusIndicator.Image = NSImage.ImageNamed(NSImageName.StatusPartiallyAvailable);
                     StatusIndicatorText.StringValue = "Starting...";
+                    NameInput.Enabled = false;
+                    PortInput.Enabled = false;
+                    BufferSizeInput.Enabled = false;
+                    BufferSizeSlider.Enabled = false;
                     break;
                 case ServerStatus.Started:
                     StartButton.Enabled = true;
                     StartButton.Title = "Stop";
-                    AppendMessage($"~ Started listening on port {PortInput.StringValue}.", NSColor.SystemGreenColor);
                     StatusIndicator.Image = NSImage.ImageNamed(NSImageName.StatusAvailable);
                     StatusIndicatorText.StringValue = "Server running";
+                    SendButton.Enabled = true;
+                    ChatMessageInput.Enabled = true;
+                    AppendMessage($"~ Started listening on port {PortInput.StringValue}.", NSColor.SystemGreenColor);
                     break;
                 case ServerStatus.Stopping:
                     StartButton.Enabled = false;
                     StatusIndicator.Image = NSImage.ImageNamed(NSImageName.StatusPartiallyAvailable);
                     StatusIndicatorText.StringValue = "Stopping...";
+                    SendButton.Enabled = false;
+                    ChatMessageInput.Enabled = false;
                     break;
                 case ServerStatus.Stopped:
                     StartButton.Enabled = true;
                     StartButton.Title = "Start";
-                    AppendMessage("~ Server stopped.", NSColor.SystemRedColor);
                     StatusIndicator.Image = NSImage.ImageNamed(NSImageName.StatusUnavailable);
                     StatusIndicatorText.StringValue = "Server stopped";
+                    NameInput.Enabled = true;
+                    PortInput.Enabled = true;
+                    BufferSizeInput.Enabled = true;
+                    BufferSizeSlider.Enabled = true;
+                    AppendMessage("~ Server stopped.", NSColor.SystemRedColor);
                     break;
                 default:
                     return;

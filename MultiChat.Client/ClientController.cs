@@ -15,21 +15,42 @@ namespace MultiChat.Client
     [Register("ClientController")]
     public partial class ClientController : NSViewController
     {
+        private ClientStatus ClientStatus { get; set; }
         private TcpClient Client { get; set; }
         private string ClientName { get; set; }
         private CancellationTokenSource ClientCancellationTokenSource { get; set; }
-        
+
         public ClientController(IntPtr handle) : base(handle)
         {
+            ClientStatus = ClientStatus.Disconnected;
+        }
+
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            SendButton.Enabled = false;
+            ChatMessageInput.Enabled = false;
         }
 
         async partial void ConnectButtonPressed(NSObject sender)
         {
-            ClientName = NameInput.StringValue;
-            ClientCancellationTokenSource = new CancellationTokenSource();
-            Client = new TcpClient();
-            await Client.ConnectAsync(IPAddress.Parse(IPAddressInput.StringValue), PortInput.IntValue);
-            await ReadAsync(ClientCancellationTokenSource.Token);
+            if (ClientStatus == ClientStatus.Disconnected)
+            {
+                UpdateClientStatus(ClientStatus.Connecting);
+                ClientName = NameInput.StringValue;
+                ClientCancellationTokenSource = new CancellationTokenSource();
+                ClientCancellationTokenSource.Token.Register(() => { Client.Dispose(); });
+                Client = new TcpClient();
+                await Client.ConnectAsync(IPAddress.Parse(IPAddressInput.StringValue), PortInput.IntValue);
+                UpdateClientStatus(ClientStatus.Connected);
+                await ReadAsync(ClientCancellationTokenSource.Token);
+            }
+            else if (ClientStatus == ClientStatus.Connected)
+            {
+                UpdateClientStatus(ClientStatus.Disconnecting);
+                ClientCancellationTokenSource.Cancel();
+                UpdateClientStatus(ClientStatus.Disconnected);
+            }
         }
 
         async partial void SendButtonPressed(NSObject sender)
@@ -74,6 +95,7 @@ namespace MultiChat.Client
                 }
             }
         }
+
         private async Task WriteAsync(string message)
         {
             try
@@ -93,7 +115,7 @@ namespace MultiChat.Client
                 Console.WriteLine("NetworkStream connection failure");
             }
         }
-        
+
         private void AppendMessage(string message)
         {
             AppendMessage(message, NSColor.LabelColor);
@@ -110,6 +132,48 @@ namespace MultiChat.Client
             var scrollPoint = new CGPoint(scrollPositionX, scrollPositionY);
             ChatMessageList.ContentView.ScrollToPoint(scrollPoint);
         }
+
+        private void UpdateClientStatus(ClientStatus status)
+        {
+            ClientStatus = status;
+            switch (status)
+            {
+                case ClientStatus.Connecting:
+                    ConnectButton.Enabled = false;
+                    NameInput.Enabled = false;
+                    IPAddressInput.Enabled = false;
+                    PortInput.Enabled = false;
+                    BufferSizeInput.Enabled = false;
+                    BufferSizeSlider.Enabled = false;
+                    AppendMessage("~ Connecting to server...", NSColor.SystemYellowColor);
+                    break;
+                case ClientStatus.Connected:
+                    ConnectButton.Enabled = true;
+                    ConnectButton.Title = "Disconnect";
+                    SendButton.Enabled = true;
+                    ChatMessageInput.Enabled = true;
+                    AppendMessage($"~ Connected to {IPAddressInput.StringValue}.", NSColor.SystemGreenColor);
+                    break;
+                case ClientStatus.Disconnecting:
+                    ConnectButton.Enabled = false;
+                    SendButton.Enabled = false;
+                    ChatMessageInput.Enabled = false;
+                    break;
+                case ClientStatus.Disconnected:
+                    ConnectButton.Enabled = true;
+                    ConnectButton.Title = "Connect";
+                    NameInput.Enabled = true;
+                    PortInput.Enabled = true;
+                    IPAddressInput.Enabled = true;
+                    BufferSizeInput.Enabled = true;
+                    BufferSizeSlider.Enabled = true;
+                    AppendMessage("~ Disconnected.", NSColor.SystemRedColor);
+                    break;
+                default:
+                    return;
+            }
+        }
+
         partial void BufferSizeSliderChanged(NSObject sender)
         {
             BufferSizeInput.IntValue = BufferSizeSlider.IntValue;

@@ -1013,6 +1013,7 @@
                         <outlet property="ClientList" destination="1vR-0v-iR3" id="PDg-7W-Az0"/>
                         <outlet property="NameInput" destination="GHi-tV-xqa" id="4N9-L1-Q0p"/>
                         <outlet property="PortInput" destination="1ON-mH-jVg" id="7Lc-gx-O9e"/>
+                        <outlet property="SendButton" destination="ptK-vU-iT0" id="sGV-5j-eQ9"/>
                         <outlet property="StartButton" destination="vKX-33-brE" id="Jqc-8v-y7s"/>
                         <outlet property="StatusIndicator" destination="cb0-Pe-Wkj" id="XRn-Aw-unL"/>
                         <outlet property="StatusIndicatorText" destination="egp-tR-v7V" id="Kdd-v2-XiD"/>
@@ -1020,7 +1021,7 @@
                 </viewController>
                 <customObject id="MPj-GK-fxD" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-184" y="1383"/>
+            <point key="canvasLocation" x="74" y="941"/>
         </scene>
     </scenes>
     <resources>

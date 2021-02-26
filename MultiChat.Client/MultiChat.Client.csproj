@@ -68,6 +68,7 @@
         <Compile Include="ClientController.designer.cs">
           <DependentUpon>ClientController.cs</DependentUpon>
         </Compile>
+        <Compile Include="ClientStatus.cs" />
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
     </ItemGroup>

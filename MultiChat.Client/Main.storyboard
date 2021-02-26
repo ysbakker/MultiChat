@@ -909,6 +909,7 @@
                         <outlet property="IPAddressInput" destination="Kms-Sn-JHF" id="1i7-9I-EKv"/>
                         <outlet property="NameInput" destination="dGl-dV-Fua" id="rvK-Bt-S8G"/>
                         <outlet property="PortInput" destination="jBg-YR-A83" id="ZaW-Nr-1IX"/>
+                        <outlet property="SendButton" destination="dgw-8U-YlZ" id="qE3-yW-eh6"/>
                     </connections>
                 </viewController>
                 <customObject id="YB9-o8-jFT" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

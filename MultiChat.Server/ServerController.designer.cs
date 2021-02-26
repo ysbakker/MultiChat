@@ -34,6 +34,9 @@ namespace MultiChat.Server
 		AppKit.NSTextField PortInput { get; set; }
 
 		[Outlet]
+		AppKit.NSButton SendButton { get; set; }
+
+		[Outlet]
 		AppKit.NSButton StartButton { get; set; }
 
 		[Outlet]
@@ -56,16 +59,6 @@ namespace MultiChat.Server
 
 		void ReleaseDesignerOutlets ()
 		{
-			if (NameInput != null) {
-				NameInput.Dispose ();
-				NameInput = null;
-			}
-
-			if (PortInput != null) {
-				PortInput.Dispose ();
-				PortInput = null;
-			}
-
 			if (BufferSizeInput != null) {
 				BufferSizeInput.Dispose ();
 				BufferSizeInput = null;
@@ -74,6 +67,31 @@ namespace MultiChat.Server
 			if (BufferSizeSlider != null) {
 				BufferSizeSlider.Dispose ();
 				BufferSizeSlider = null;
+			}
+
+			if (ChatMessageInput != null) {
+				ChatMessageInput.Dispose ();
+				ChatMessageInput = null;
+			}
+
+			if (ChatMessageList != null) {
+				ChatMessageList.Dispose ();
+				ChatMessageList = null;
+			}
+
+			if (ClientList != null) {
+				ClientList.Dispose ();
+				ClientList = null;
+			}
+
+			if (NameInput != null) {
+				NameInput.Dispose ();
+				NameInput = null;
+			}
+
+			if (PortInput != null) {
+				PortInput.Dispose ();
+				PortInput = null;
 			}
 
 			if (StartButton != null) {
@@ -91,19 +109,9 @@ namespace MultiChat.Server
 				StatusIndicatorText = null;
 			}
 
-			if (ClientList != null) {
-				ClientList.Dispose ();
-				ClientList = null;
-			}
-
-			if (ChatMessageList != null) {
-				ChatMessageList.Dispose ();
-				ChatMessageList = null;
-			}
-
-			if (ChatMessageInput != null) {
-				ChatMessageInput.Dispose ();
-				ChatMessageInput = null;
+			if (SendButton != null) {
+				SendButton.Dispose ();
+				SendButton = null;
 			}
 
 		}
