@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -17,12 +19,13 @@ namespace MultiChat.Server
     {
         private TcpListener Server { get; set; }
         private ServerStatus ServerStatus { get; set; }
-        private IList<TcpClient> Clients { get; set; }
+        private ObservableCollection<TcpClient> Clients { get; set; }
         private CancellationTokenSource ServerCancellationTokenSource { get; set; }
 
         public ServerController(IntPtr handle) : base(handle)
         {
-            Clients = new List<TcpClient>();
+            Clients = new ObservableCollection<TcpClient>();
+            Clients.CollectionChanged += UpdateClientList;
             ServerStatus = ServerStatus.Stopped;
         }
 
@@ -53,7 +56,6 @@ namespace MultiChat.Server
                 try
                 {
                     var client = await Server.AcceptTcpClientAsync();
-                    AppendMessage("New client connected!");
                     Clients.Add(client);
                     ReadAsync(client, token);
                 }
@@ -87,7 +89,7 @@ namespace MultiChat.Server
             {
                 try
                 {
-                    var bufferSize = 1024;
+                    var bufferSize = BufferSizeInput.IntValue;
                     var stream = client.GetStream();
                     var message = new StringBuilder();
                     do
@@ -170,6 +172,18 @@ namespace MultiChat.Server
                                      ChatMessageList.ContentSize.Height;
             var scrollPoint = new CGPoint(scrollPositionX, scrollPositionY);
             ChatMessageList.ContentView.ScrollToPoint(scrollPoint);
+        }
+
+        private void UpdateClientList(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems?.Count > 0)
+            {
+                AppendMessage($"{e.OldItems[0].GetHashCode()} disconnected.");
+            }
+            else if (e.NewItems?.Count > 0)
+            {
+                AppendMessage($"{e.NewItems[0].GetHashCode()} connected.");
+            }
         }
 
         private void UpdateServerStatus(ServerStatus status)
