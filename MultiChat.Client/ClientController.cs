@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using MultiChat.Common;
 
 namespace MultiChat.Client
 {
@@ -42,19 +43,24 @@ namespace MultiChat.Client
         {
             while (!token.IsCancellationRequested)
             {
-                var bufferSize = 1024;
                 try
                 {
+                    var bufferSize = BufferSizeInput.IntValue;
                     var stream = Client.GetStream();
-                    StringBuilder message = new StringBuilder();
+                    var message = new Message();
                     do
                     {
                         var buffer = new byte[bufferSize];
-                        await stream.ReadAsync(buffer, 0, bufferSize, token);
-                        message.Append(Encoding.Unicode.GetString(buffer));
-                    } while (stream.DataAvailable);
+                        int bytesRead = await stream.ReadAsync(buffer, 0, bufferSize, token);
+                        if (bytesRead > 0)
+                        {
+                            message.Append(buffer);
+                        }
+                    } while (!message.Terminated && stream.DataAvailable);
 
-                    AppendMessage(message.ToString());
+                    if (message.Empty) continue;
+                    var decoded = message.Decode();
+                    AppendMessage(decoded);
                 }
                 catch (ObjectDisposedException)
                 {
@@ -70,9 +76,22 @@ namespace MultiChat.Client
         }
         private async Task WriteAsync(string message)
         {
-            var stream = Client.GetStream();
-            var bytes = Encoding.Unicode.GetBytes(message);
-            await stream.WriteAsync(bytes, 0, bytes.Length);
+            try
+            {
+                var stream = Client.GetStream();
+                var bytes = new Message(message).Prepare();
+                await stream.WriteAsync(bytes, 0, bytes.Length);
+            }
+            catch (ObjectDisposedException)
+            {
+                // TODO: Better exception handling
+                Console.WriteLine("Couldn't write because object was disposed");
+            }
+            catch (IOException)
+            {
+                // TODO: Better exception handling
+                Console.WriteLine("NetworkStream connection failure");
+            }
         }
         
         private void AppendMessage(string message)

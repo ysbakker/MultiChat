@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using MultiChat.Common;
 
 namespace MultiChat.Server
 {
@@ -91,20 +92,21 @@ namespace MultiChat.Server
                 {
                     var bufferSize = BufferSizeInput.IntValue;
                     var stream = client.GetStream();
-                    var message = new StringBuilder();
+                    var message = new Message();
                     do
                     {
                         var buffer = new byte[bufferSize];
                         int bytesRead = await stream.ReadAsync(buffer, 0, bufferSize, token);
                         if (bytesRead > 0)
                         {
-                            message.Append(Encoding.Unicode.GetString(buffer));
+                            message.Append(buffer);
                         }
-                    } while (stream.DataAvailable);
+                    } while (!message.Terminated && stream.DataAvailable);
 
-                    if (string.IsNullOrEmpty(message.ToString())) continue;
-                    AppendMessage(message.ToString());
-                    await BroadcastMessage(message.ToString(), client);
+                    if (message.Empty) continue;
+                    var decoded = message.Decode();
+                    AppendMessage(decoded);
+                    await BroadcastMessage(decoded, client);
                 }
                 catch (Exception ex) when (ex is InvalidOperationException || ex is ObjectDisposedException || ex is IOException)
                 {
@@ -123,7 +125,7 @@ namespace MultiChat.Server
             try
             {
                 var stream = client.GetStream();
-                var bytes = Encoding.Unicode.GetBytes(message);
+                var bytes = new Message(message).Prepare();
                 await stream.WriteAsync(bytes, 0, bytes.Length);
             }
             catch (ObjectDisposedException)

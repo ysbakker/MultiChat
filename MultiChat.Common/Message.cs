@@ -20,22 +20,34 @@ namespace MultiChat.Common
         {
             Builder = new StringBuilder(content);
         }
+        
+        public Message(byte[] bytes)
+        {
+            var content = Encoding.Unicode.GetString(bytes);
+            Builder = new StringBuilder(content);
+        }
 
+        public void Append(byte[] bytes)
+        {
+            Append(Encoding.Unicode.GetString(bytes));
+        }
+        
         public void Append(string content)
         {
             if (content.Contains(Marker)) Terminated = true;
             Builder.Append(content);
         }
 
-        public string Prepare()
+        public byte[] Prepare()
         {
-            return WebUtility.UrlEncode(Builder.ToString()) + Marker;
+            var message = WebUtility.UrlEncode(Builder.ToString()) + Marker;
+            return Encoding.Unicode.GetBytes(message);
         }
 
         public string Decode()
         {
             Builder.Replace(Marker, string.Empty);
-            return Builder.ToString();;
+            return WebUtility.UrlDecode(Builder.ToString());
         }
     }
 }
