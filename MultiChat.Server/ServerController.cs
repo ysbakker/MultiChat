@@ -42,7 +42,7 @@ namespace MultiChat.Server
             {
                 UpdateServerStatus(ServerStatus.Starting);
                 ServerCancellationTokenSource = new CancellationTokenSource();
-                ServerCancellationTokenSource.Token.Register(() => { Server.Stop(); });
+                ServerCancellationTokenSource.Token.Register(Stop);
                 Server = new TcpListener(IPAddress.Any, PortInput.IntValue);
                 Server.Start();
                 UpdateServerStatus(ServerStatus.Started);
@@ -116,9 +116,7 @@ namespace MultiChat.Server
                 }
                 catch (Exception ex) when (ex is InvalidOperationException || ex is ObjectDisposedException || ex is IOException)
                 {
-                    // TODO
                     // The client is no longer connected properly
-                    DisplayError("Client lost connection.");
                     client.Dispose();
                     Clients.Remove(client);
                     return;
@@ -163,6 +161,12 @@ namespace MultiChat.Server
             }
 
             await Task.WhenAll(queue);
+        }
+
+        private void Stop()
+        {
+            Clients.Clear();
+            Server.Stop();
         }
 
         private void AppendMessage(string message)
