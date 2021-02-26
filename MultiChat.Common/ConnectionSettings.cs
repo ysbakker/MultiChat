@@ -1,15 +1,15 @@
 using System.Net;
 
-namespace MultiChat.Common.Models
+namespace MultiChat.Common
 {
-    public class ConnectionSettingsModel
+    public class ConnectionSettings
     {
         public string Name { get; }
         public IPAddress IPAddress { get; }
         public int Port { get; }
         public int BufferSize { get; }
 
-        public ConnectionSettingsModel(string name, IPAddress ipAddress, int port, int bufferSize)
+        public ConnectionSettings(string name, IPAddress ipAddress, int port, int bufferSize)
         {
             Name = name;
             IPAddress = ipAddress;
@@ -17,7 +17,7 @@ namespace MultiChat.Common.Models
             BufferSize = bufferSize;
         }
         
-        public ConnectionSettingsModel(string name, int port, int bufferSize)
+        public ConnectionSettings(string name, int port, int bufferSize)
         {
             Name = name;
             IPAddress = IPAddress.Any;

@@ -31,16 +31,6 @@ namespace MultiChat.Client
             await ReadAsync(ClientCancellationTokenSource.Token);
         }
 
-        partial void BufferSizeSliderChanged(NSObject sender)
-        {
-            BufferSizeInput.IntValue = BufferSizeSlider.IntValue;
-        }
-
-        partial void BufferSizeInputChanged(NSObject sender)
-        {
-            BufferSizeSlider.IntValue = BufferSizeInput.IntValue;
-        }
-
         async partial void SendButtonPressed(NSObject sender)
         {
             var message = $"{ClientName}: {ChatMessageInput.StringValue}";
@@ -101,6 +91,14 @@ namespace MultiChat.Client
             var scrollPoint = new CGPoint(scrollPositionX, scrollPositionY);
             ChatMessageList.ContentView.ScrollToPoint(scrollPoint);
         }
-        
+        partial void BufferSizeSliderChanged(NSObject sender)
+        {
+            BufferSizeInput.IntValue = BufferSizeSlider.IntValue;
+        }
+
+        partial void BufferSizeInputChanged(NSObject sender)
+        {
+            BufferSizeSlider.IntValue = BufferSizeInput.IntValue;
+        }
     }
 }
