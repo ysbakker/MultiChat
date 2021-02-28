@@ -48,6 +48,7 @@
         <Compile Include="Message.cs" />
         <Compile Include="MessageType.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Validatable.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
