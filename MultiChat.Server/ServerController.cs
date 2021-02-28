@@ -136,6 +136,7 @@ namespace MultiChat.Server
                     // The client is no longer connected properly
                     client.Dispose();
                     Clients.Remove(client);
+                    ClientTable.ReloadData();
                     return;
                 }
             }
