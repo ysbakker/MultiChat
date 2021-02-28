@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +19,7 @@ namespace MultiChat.Server
         private ServerStatus ServerStatus { get; set; }
         private List<Client> Clients { get; set; }
         private CancellationTokenSource ServerCancellationTokenSource { get; set; }
+        private ConnectionSettings Settings { get; set; }
 
         public ServerController(IntPtr handle) : base(handle)
         {
@@ -44,9 +42,17 @@ namespace MultiChat.Server
             if (ServerStatus == ServerStatus.Stopped)
             {
                 UpdateServerStatus(ServerStatus.Starting);
+                Settings = new ConnectionSettings(NameInput.StringValue, PortInput.IntValue,
+                    BufferSizeInput.IntValue);
+                if (!Settings.Valid)
+                {
+                    DisplayError("One of the input values is incorrect!");
+                    ServerStatus = ServerStatus.Stopped;
+                    return;
+                }
                 ServerCancellationTokenSource = new CancellationTokenSource();
                 ServerCancellationTokenSource.Token.Register(Stop);
-                Server = new TcpListener(IPAddress.Any, PortInput.IntValue);
+                Server = new TcpListener(Settings.IpAddress, Settings.Port);
                 Server.Start();
                 UpdateServerStatus(ServerStatus.Started);
                 await ListenAsync(ServerCancellationTokenSource.Token);
@@ -99,7 +105,7 @@ namespace MultiChat.Server
             {
                 try
                 {
-                    var bufferSize = BufferSizeInput.IntValue;
+                    var bufferSize = Settings.BufferSize;
                     var stream = client.TcpClient.GetStream();
                     var message = new Message();
                     do
@@ -124,7 +130,8 @@ namespace MultiChat.Server
                         await BroadcastMessage(decoded, client);
                     }
                 }
-                catch (Exception ex) when (ex is InvalidOperationException || ex is ObjectDisposedException || ex is IOException)
+                catch (Exception ex) when (ex is InvalidOperationException || ex is ObjectDisposedException ||
+                                           ex is IOException)
                 {
                     // The client is no longer connected properly
                     client.Dispose();
@@ -156,7 +163,8 @@ namespace MultiChat.Server
 
         async partial void SendButtonPressed(NSObject sender)
         {
-            var message = $"Server: {ChatMessageInput.StringValue}";
+            if (string.IsNullOrEmpty(ChatMessageInput.StringValue)) return;
+            var message = $"{Settings.Name}: {ChatMessageInput.StringValue}";
             await BroadcastMessage(message, null);
             AppendMessage(message, NSColor.SystemBlueColor);
         }
@@ -229,7 +237,7 @@ namespace MultiChat.Server
                     StatusIndicatorText.StringValue = "Server running";
                     SendButton.Enabled = true;
                     ChatMessageInput.Enabled = true;
-                    AppendMessage($"~ Started listening on port {PortInput.StringValue}.", NSColor.SystemGreenColor);
+                    AppendMessage($"~ Started listening on port {Settings.Port}.", NSColor.SystemGreenColor);
                     break;
                 case ServerStatus.Stopping:
                     StartButton.Enabled = false;
