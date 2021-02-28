@@ -72,6 +72,7 @@ namespace MultiChat.Common
         {
             Builder.Replace(Marker, string.Empty);
             Builder.Replace(SpecialPrefix, string.Empty);
+            Builder.Replace("\0", string.Empty);
             return WebUtility.UrlDecode(Builder.ToString());
         }
 

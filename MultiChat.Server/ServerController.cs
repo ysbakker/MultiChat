@@ -67,7 +67,6 @@ namespace MultiChat.Server
                 {
                     var client = new Client(await Server.AcceptTcpClientAsync());
                     Clients.Add(client);
-                    ClientTable.ReloadData();
                     ReadAsync(client, token);
                 }
                 catch (ObjectDisposedException)
@@ -203,7 +202,7 @@ namespace MultiChat.Server
             switch (values[0])
             {
                 case "name":
-                    initiator.Name = values[1];
+                    initiator.Name = values.Length > 1 ? values[1] : "Anon";
                     ClientTable.ReloadData();
                     break;
             }
