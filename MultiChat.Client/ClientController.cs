@@ -42,6 +42,7 @@ namespace MultiChat.Client
                 ClientCancellationTokenSource.Token.Register(() => { Client.Dispose(); });
                 Client = new TcpClient();
                 await Client.ConnectAsync(IPAddress.Parse(IPAddressInput.StringValue), PortInput.IntValue);
+                await AnnounceName();
                 UpdateClientStatus(ClientStatus.Connected);
                 await ReadAsync(ClientCancellationTokenSource.Token);
             }
@@ -98,10 +99,15 @@ namespace MultiChat.Client
 
         private async Task WriteAsync(string message)
         {
+            await WriteAsync(new Message(message));
+        }
+
+        private async Task WriteAsync(Message message)
+        {
             try
             {
+                var bytes = message.Prepare();
                 var stream = Client.GetStream();
-                var bytes = new Message(message).Prepare();
                 await stream.WriteAsync(bytes, 0, bytes.Length);
             }
             catch (ObjectDisposedException)
@@ -114,6 +120,12 @@ namespace MultiChat.Client
                 // TODO: Better exception handling
                 Console.WriteLine("NetworkStream connection failure");
             }
+        }
+
+        private async Task AnnounceName()
+        {
+            var message = new Message("name", ClientName);
+            await WriteAsync(message);
         }
 
         private void AppendMessage(string message)

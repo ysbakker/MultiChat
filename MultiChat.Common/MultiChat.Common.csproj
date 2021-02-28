@@ -46,6 +46,7 @@
     <ItemGroup>
         <Compile Include="ConnectionSettings.cs" />
         <Compile Include="Message.cs" />
+        <Compile Include="MessageType.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />

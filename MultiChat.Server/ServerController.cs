@@ -11,6 +11,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MultiChat.Common;
+using MultiChat.Server.ClientTable;
 
 namespace MultiChat.Server
 {
@@ -19,13 +20,12 @@ namespace MultiChat.Server
     {
         private TcpListener Server { get; set; }
         private ServerStatus ServerStatus { get; set; }
-        private ObservableCollection<TcpClient> Clients { get; set; }
+        private List<Client> Clients { get; set; }
         private CancellationTokenSource ServerCancellationTokenSource { get; set; }
 
         public ServerController(IntPtr handle) : base(handle)
         {
-            Clients = new ObservableCollection<TcpClient>();
-            Clients.CollectionChanged += UpdateClientList;
+            Clients = new List<Client>();
             ServerStatus = ServerStatus.Stopped;
         }
 
@@ -34,6 +34,9 @@ namespace MultiChat.Server
             base.ViewDidLoad();
             SendButton.Enabled = false;
             ChatMessageInput.Enabled = false;
+            var dataSource = new ClientDataSource {Clients = this.Clients};
+            ClientTable.DataSource = dataSource;
+            ClientTable.Delegate = new ClientTableDelegate(dataSource);
         }
 
         async partial void StartButtonPressed(NSObject sender)
@@ -62,8 +65,9 @@ namespace MultiChat.Server
             {
                 try
                 {
-                    var client = await Server.AcceptTcpClientAsync();
+                    var client = new Client(await Server.AcceptTcpClientAsync());
                     Clients.Add(client);
+                    ClientTable.ReloadData();
                     ReadAsync(client, token);
                 }
                 catch (ObjectDisposedException)
@@ -90,14 +94,14 @@ namespace MultiChat.Server
             }
         }
 
-        private async void ReadAsync(TcpClient client, CancellationToken token)
+        private async void ReadAsync(Client client, CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
                 try
                 {
                     var bufferSize = BufferSizeInput.IntValue;
-                    var stream = client.GetStream();
+                    var stream = client.TcpClient.GetStream();
                     var message = new Message();
                     do
                     {
@@ -110,9 +114,16 @@ namespace MultiChat.Server
                     } while (!message.Terminated && stream.DataAvailable);
 
                     if (message.Empty) continue;
-                    var decoded = message.Decode();
-                    AppendMessage(decoded);
-                    await BroadcastMessage(decoded, client);
+                    if (message.Special)
+                    {
+                        HandleSpecialMessage(client, message);
+                    }
+                    else
+                    {
+                        var decoded = message.Decode();
+                        AppendMessage(decoded);
+                        await BroadcastMessage(decoded, client);
+                    }
                 }
                 catch (Exception ex) when (ex is InvalidOperationException || ex is ObjectDisposedException || ex is IOException)
                 {
@@ -124,11 +135,11 @@ namespace MultiChat.Server
             }
         }
 
-        private async Task WriteAsync(TcpClient client, string message)
+        private async Task WriteAsync(Client client, string message)
         {
             try
             {
-                var stream = client.GetStream();
+                var stream = client.TcpClient.GetStream();
                 var bytes = new Message(message).Prepare();
                 await stream.WriteAsync(bytes, 0, bytes.Length);
             }
@@ -151,7 +162,7 @@ namespace MultiChat.Server
             AppendMessage(message, NSColor.SystemBlueColor);
         }
 
-        private async Task BroadcastMessage(string message, TcpClient sender)
+        private async Task BroadcastMessage(string message, Client sender)
         {
             IList<Task> queue = new List<Task>();
             foreach (var client in Clients)
@@ -186,15 +197,15 @@ namespace MultiChat.Server
             ChatMessageList.ContentView.ScrollToPoint(scrollPoint);
         }
 
-        private void UpdateClientList(object sender, NotifyCollectionChangedEventArgs e)
+        private void HandleSpecialMessage(Client initiator, Message message)
         {
-            if (e.OldItems?.Count > 0)
+            string[] values = message.GetValues();
+            switch (values[0])
             {
-                AppendMessage($"{e.OldItems[0].GetHashCode()} disconnected.");
-            }
-            else if (e.NewItems?.Count > 0)
-            {
-                AppendMessage($"{e.NewItems[0].GetHashCode()} connected.");
+                case "name":
+                    initiator.Name = values[1];
+                    ClientTable.ReloadData();
+                    break;
             }
         }
 

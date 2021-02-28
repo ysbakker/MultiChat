@@ -25,7 +25,13 @@ namespace MultiChat.Server
 		AppKit.NSScrollView ChatMessageList { get; set; }
 
 		[Outlet]
+		AppKit.NSTableColumn ClientColumn { get; set; }
+
+		[Outlet]
 		AppKit.NSScrollView ClientList { get; set; }
+
+		[Outlet]
+		AppKit.NSTableView ClientTable { get; set; }
 
 		[Outlet]
 		AppKit.NSTextField NameInput { get; set; }
@@ -84,6 +90,16 @@ namespace MultiChat.Server
 				ClientList = null;
 			}
 
+			if (ClientTable != null) {
+				ClientTable.Dispose ();
+				ClientTable = null;
+			}
+
+			if (ClientColumn != null) {
+				ClientColumn.Dispose ();
+				ClientColumn = null;
+			}
+
 			if (NameInput != null) {
 				NameInput.Dispose ();
 				NameInput = null;
@@ -92,6 +108,11 @@ namespace MultiChat.Server
 			if (PortInput != null) {
 				PortInput.Dispose ();
 				PortInput = null;
+			}
+
+			if (SendButton != null) {
+				SendButton.Dispose ();
+				SendButton = null;
 			}
 
 			if (StartButton != null) {
@@ -107,11 +128,6 @@ namespace MultiChat.Server
 			if (StatusIndicatorText != null) {
 				StatusIndicatorText.Dispose ();
 				StatusIndicatorText = null;
-			}
-
-			if (SendButton != null) {
-				SendButton.Dispose ();
-				SendButton = null;
 			}
 
 		}

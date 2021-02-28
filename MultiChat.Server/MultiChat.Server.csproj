@@ -61,6 +61,9 @@
         <None Include="Entitlements.plist" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Client.cs" />
+        <Compile Include="ClientTable\ClientDataSource.cs" />
+        <Compile Include="ClientTable\ClientTableDelegate.cs" />
         <Compile Include="Main.cs" />
         <Compile Include="AppDelegate.cs" />
         <Compile Include="ServerController.cs" />
