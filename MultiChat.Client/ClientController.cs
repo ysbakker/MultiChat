@@ -55,7 +55,9 @@ namespace MultiChat.Client
                 ClientCancellationTokenSource = new CancellationTokenSource();
                 ClientCancellationTokenSource.Token.Register(() => { Client.Dispose(); });
                 Client = new TcpClient();
-                await Client.ConnectAsync(Settings.IpAddress, Settings.Port);
+                
+                if (!await Connect()) return;
+                
                 await AnnounceName();
                 UpdateClientStatus(ClientStatus.Connected);
                 await ReadAsync(ClientCancellationTokenSource.Token);
@@ -67,6 +69,23 @@ namespace MultiChat.Client
                 ClientCancellationTokenSource.Cancel();
                 UpdateClientStatus(ClientStatus.Disconnected);
             }
+        }
+
+        private async Task<bool> Connect()
+        {
+            try
+            {
+                await Client.ConnectAsync(Settings.IpAddress, Settings.Port);
+            }
+            catch (Exception ex) when (ex is SocketException || ex is ArgumentOutOfRangeException)
+            {
+                // Connection failed
+                DisplayError("Connection failed. Is the server running?");
+                UpdateClientStatus(ClientStatus.Disconnected);
+                return false;
+            }
+
+            return true;
         }
 
         async partial void SendButtonPressed(NSObject sender)
@@ -95,8 +114,14 @@ namespace MultiChat.Client
                     } while (!message.Terminated && stream.DataAvailable);
 
                     if (message.Empty) continue;
-                    var decoded = message.Decode();
-                    AppendMessage(decoded);
+                    if (message.Special)
+                    {
+                        HandleSpecialMessage(message);
+                    }
+                    else
+                    {
+                        AppendMessage(message.Decode());
+                    }
                 }
                 catch (ObjectDisposedException)
                 {
@@ -133,6 +158,19 @@ namespace MultiChat.Client
             {
                 // TODO: Better exception handling
                 Console.WriteLine("NetworkStream connection failure");
+            }
+        }
+
+        private void HandleSpecialMessage(Message message)
+        {
+            string[] values = message.GetValues();
+            switch (values[0])
+            {
+                case "bye":
+                    UpdateClientStatus(ClientStatus.Disconnecting);
+                    DisplayError("Server disconnected");
+                    UpdateClientStatus(ClientStatus.Disconnected);
+                    break;
             }
         }
 

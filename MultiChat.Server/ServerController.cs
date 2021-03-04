@@ -27,6 +27,12 @@ namespace MultiChat.Server
             ServerStatus = ServerStatus.Stopped;
         }
 
+        public override async void ViewWillDisappear()
+        {
+            base.ViewWillDisappear();
+            await SayGoodbye();
+        }
+
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
@@ -60,6 +66,7 @@ namespace MultiChat.Server
             else if (ServerStatus == ServerStatus.Started)
             {
                 UpdateServerStatus(ServerStatus.Stopping);
+                await SayGoodbye();
                 ServerCancellationTokenSource.Cancel();
                 UpdateServerStatus(ServerStatus.Stopped);
             }
@@ -139,11 +146,6 @@ namespace MultiChat.Server
             }
         }
 
-        private async Task WriteAsync(Client client, string message)
-        {
-            await WriteAsync(client, new Message(message));
-        }
-
         private async Task WriteAsync(Client client, Message message)
         {
             try
@@ -174,6 +176,11 @@ namespace MultiChat.Server
 
         private async Task BroadcastMessage(string message, Client sender)
         {
+            await BroadcastMessage(new Message(message), sender);
+        }
+
+        private async Task BroadcastMessage(Message message, Client sender)
+        {
             IList<Task> queue = new List<Task>();
             foreach (var client in Clients)
             {
@@ -187,7 +194,14 @@ namespace MultiChat.Server
         private void Stop()
         {
             Clients.Clear();
+            ClientTable.ReloadData();
             Server.Stop();
+        }
+
+        private async Task SayGoodbye()
+        {
+            var farewell = new Message("bye", null);
+            await BroadcastMessage(farewell, null);
         }
 
         private void AppendMessage(string message)
