@@ -82,26 +82,10 @@ namespace MultiChat.Server
                     Clients.Add(client);
                     ReadAsync(client, token);
                 }
-                catch (ObjectDisposedException)
+                catch (Exception ex) when (ex is ObjectDisposedException || ex is SocketException)
                 {
-                    // TODO: Better exception handling
                     // This happens when the server is stopped
-                    Console.WriteLine("TcpListener was disposed");
-                }
-                catch (SocketException)
-                {
-                    // TODO: Better exception handling
-                    Console.WriteLine("Something went wrong in the socket");
-                }
-                catch (InvalidOperationException)
-                {
-                    // TODO: Better exception handling
-                    Console.WriteLine("TcpClient not connected");
-                }
-                catch (IOException)
-                {
-                    // TODO: Better exception handling
-                    Console.WriteLine("NetworkStream connection failure");
+                    Console.WriteLine("Server stopped.");
                 }
             }
         }
@@ -154,15 +138,10 @@ namespace MultiChat.Server
                 var bytes = message.Prepare();
                 await stream.WriteAsync(bytes, 0, bytes.Length);
             }
-            catch (ObjectDisposedException)
+            catch (Exception ex) when (ex is ObjectDisposedException || ex is IOException)
             {
-                // TODO: Better exception handling
-                Console.WriteLine("Couldn't write because object was disposed");
-            }
-            catch (IOException)
-            {
-                // TODO: Better exception handling
-                Console.WriteLine("NetworkStream connection failure");
+                // Client disconnects during write
+                Console.WriteLine($"Client {client.Name} disconnected during write.");
             }
         }
 

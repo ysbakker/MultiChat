@@ -76,6 +76,7 @@ namespace MultiChat.Client
             try
             {
                 await Client.ConnectAsync(Settings.IpAddress, Settings.Port);
+                return true;
             }
             catch (Exception ex) when (ex is SocketException || ex is ArgumentOutOfRangeException)
             {
@@ -84,8 +85,6 @@ namespace MultiChat.Client
                 UpdateClientStatus(ClientStatus.Disconnected);
                 return false;
             }
-
-            return true;
         }
 
         async partial void SendButtonPressed(NSObject sender)
@@ -123,15 +122,10 @@ namespace MultiChat.Client
                         AppendMessage(message.Decode());
                     }
                 }
-                catch (ObjectDisposedException)
+                catch (Exception ex) when (ex is ObjectDisposedException || ex is IOException)
                 {
-                    // TODO: Better exception handling
-                    Console.WriteLine("Stopped reading because object was disposed");
-                }
-                catch (IOException)
-                {
-                    // TODO: Better exception handling
-                    Console.WriteLine("NetworkStream connection failure");
+                    // Expected behaviour when client forces disconnect
+                    Console.WriteLine("Stopped reading.");
                 }
             }
         }
@@ -149,15 +143,12 @@ namespace MultiChat.Client
                 var stream = Client.GetStream();
                 await stream.WriteAsync(bytes, 0, bytes.Length);
             }
-            catch (ObjectDisposedException)
+            catch (Exception ex) when (ex is ObjectDisposedException || ex is IOException)
             {
-                // TODO: Better exception handling
-                Console.WriteLine("Couldn't write because object was disposed");
-            }
-            catch (IOException)
-            {
-                // TODO: Better exception handling
-                Console.WriteLine("NetworkStream connection failure");
+                // Highly unlikely, this happens when stream gets forcibly closed during write
+                DisplayError("Could not finish write.");
+                Client.Dispose();
+                UpdateClientStatus(ClientStatus.Disconnected);
             }
         }
 
