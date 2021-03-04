@@ -47,7 +47,7 @@ namespace MultiChat.Server
                 if (!Settings.Valid)
                 {
                     DisplayError("One of the input values is incorrect!");
-                    ServerStatus = ServerStatus.Stopped;
+                    UpdateServerStatus(ServerStatus.Stopped);
                     return;
                 }
                 ServerCancellationTokenSource = new CancellationTokenSource();
@@ -105,13 +105,12 @@ namespace MultiChat.Server
             {
                 try
                 {
-                    var bufferSize = Settings.BufferSize;
                     var stream = client.TcpClient.GetStream();
                     var message = new Message();
                     do
                     {
-                        var buffer = new byte[bufferSize];
-                        int bytesRead = await stream.ReadAsync(buffer, 0, bufferSize, token);
+                        var buffer = new byte[Settings.BufferSize];
+                        int bytesRead = await stream.ReadAsync(buffer, 0, Settings.BufferSize, token);
                         if (bytesRead > 0)
                         {
                             message.Append(buffer);

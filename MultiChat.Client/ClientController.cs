@@ -17,8 +17,8 @@ namespace MultiChat.Client
     {
         private ClientStatus ClientStatus { get; set; }
         private TcpClient Client { get; set; }
-        private string ClientName { get; set; }
         private CancellationTokenSource ClientCancellationTokenSource { get; set; }
+        private ConnectionSettings Settings { get; set; }
 
         public ClientController(IntPtr handle) : base(handle)
         {
@@ -37,11 +37,19 @@ namespace MultiChat.Client
             if (ClientStatus == ClientStatus.Disconnected)
             {
                 UpdateClientStatus(ClientStatus.Connecting);
-                ClientName = NameInput.StringValue;
+                Settings = new ConnectionSettings(NameInput.StringValue, IPAddressInput.StringValue, PortInput.IntValue,
+                    BufferSizeInput.IntValue);
+                if (!Settings.Valid)
+                {
+                    DisplayError("One of the input values is incorrect!");
+                    UpdateClientStatus(ClientStatus.Disconnected);
+                    return;
+                }
+
                 ClientCancellationTokenSource = new CancellationTokenSource();
                 ClientCancellationTokenSource.Token.Register(() => { Client.Dispose(); });
                 Client = new TcpClient();
-                await Client.ConnectAsync(IPAddress.Parse(IPAddressInput.StringValue), PortInput.IntValue);
+                await Client.ConnectAsync(Settings.IpAddress, Settings.Port);
                 await AnnounceName();
                 UpdateClientStatus(ClientStatus.Connected);
                 await ReadAsync(ClientCancellationTokenSource.Token);
@@ -56,7 +64,7 @@ namespace MultiChat.Client
 
         async partial void SendButtonPressed(NSObject sender)
         {
-            var message = $"{ClientName}: {ChatMessageInput.StringValue}";
+            var message = $"{Settings.Name}: {ChatMessageInput.StringValue}";
             await WriteAsync(message);
             AppendMessage(message, NSColor.SystemBlueColor);
         }
@@ -67,13 +75,12 @@ namespace MultiChat.Client
             {
                 try
                 {
-                    var bufferSize = BufferSizeInput.IntValue;
                     var stream = Client.GetStream();
                     var message = new Message();
                     do
                     {
-                        var buffer = new byte[bufferSize];
-                        int bytesRead = await stream.ReadAsync(buffer, 0, bufferSize, token);
+                        var buffer = new byte[Settings.BufferSize];
+                        int bytesRead = await stream.ReadAsync(buffer, 0, Settings.BufferSize, token);
                         if (bytesRead > 0)
                         {
                             message.Append(buffer);
@@ -124,7 +131,7 @@ namespace MultiChat.Client
 
         private async Task AnnounceName()
         {
-            var message = new Message("name", ClientName);
+            var message = new Message("name", Settings.Name);
             await WriteAsync(message);
         }
 
@@ -184,6 +191,17 @@ namespace MultiChat.Client
                 default:
                     return;
             }
+        }
+
+        private void DisplayError(string message)
+        {
+            var alert = new NSAlert()
+            {
+                AlertStyle = NSAlertStyle.Critical,
+                InformativeText = message ?? "Something went wrong.",
+                MessageText = "Error occured"
+            };
+            alert.RunModal();
         }
 
         partial void BufferSizeSliderChanged(NSObject sender)
