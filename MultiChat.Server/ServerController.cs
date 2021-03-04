@@ -133,9 +133,7 @@ namespace MultiChat.Server
                                            ex is IOException)
                 {
                     // The client is no longer connected properly
-                    client.Dispose();
-                    Clients.Remove(client);
-                    ClientTable.ReloadData();
+                    DisconnectClient(client);
                     return;
                 }
             }
@@ -143,10 +141,15 @@ namespace MultiChat.Server
 
         private async Task WriteAsync(Client client, string message)
         {
+            await WriteAsync(client, new Message(message));
+        }
+
+        private async Task WriteAsync(Client client, Message message)
+        {
             try
             {
                 var stream = client.TcpClient.GetStream();
-                var bytes = new Message(message).Prepare();
+                var bytes = message.Prepare();
                 await stream.WriteAsync(bytes, 0, bytes.Length);
             }
             catch (ObjectDisposedException)
@@ -213,6 +216,9 @@ namespace MultiChat.Server
                     initiator.Name = values.Length > 1 ? values[1] : "Anon";
                     ClientTable.ReloadData();
                     break;
+                case "bye":
+                    DisconnectClient(initiator);
+                    break;
             }
         }
 
@@ -271,6 +277,13 @@ namespace MultiChat.Server
                 MessageText = "Error occured"
             };
             alert.RunModal();
+        }
+
+        private void DisconnectClient(Client client)
+        {
+            client.Dispose();
+            Clients.Remove(client);
+            ClientTable.ReloadData();
         }
 
         partial void BufferSizeSliderChanged(NSObject sender)

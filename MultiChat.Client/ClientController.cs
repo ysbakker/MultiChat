@@ -25,6 +25,12 @@ namespace MultiChat.Client
             ClientStatus = ClientStatus.Disconnected;
         }
 
+        public override async void ViewWillDisappear()
+        {
+            base.ViewWillDisappear();
+            if (ClientStatus == ClientStatus.Connected) await SayGoodbye();
+        }
+
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
@@ -57,6 +63,7 @@ namespace MultiChat.Client
             else if (ClientStatus == ClientStatus.Connected)
             {
                 UpdateClientStatus(ClientStatus.Disconnecting);
+                await SayGoodbye();
                 ClientCancellationTokenSource.Cancel();
                 UpdateClientStatus(ClientStatus.Disconnected);
             }
@@ -133,6 +140,12 @@ namespace MultiChat.Client
         {
             var message = new Message("name", Settings.Name);
             await WriteAsync(message);
+        }
+
+        private async Task SayGoodbye()
+        {
+            var farewell = new Message("bye", null);
+            await WriteAsync(farewell);
         }
 
         private void AppendMessage(string message)
