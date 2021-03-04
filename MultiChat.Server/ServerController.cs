@@ -59,7 +59,7 @@ namespace MultiChat.Server
                 ServerCancellationTokenSource = new CancellationTokenSource();
                 ServerCancellationTokenSource.Token.Register(Stop);
                 Server = new TcpListener(Settings.IpAddress, Settings.Port);
-                Server.Start();
+                if (!Start()) return;
                 UpdateServerStatus(ServerStatus.Started);
                 await ListenAsync(ServerCancellationTokenSource.Token);
             }
@@ -168,6 +168,21 @@ namespace MultiChat.Server
             }
 
             await Task.WhenAll(queue);
+        }
+
+        private bool Start()
+        {
+            try
+            {
+                Server.Start();
+                return true;
+            }
+            catch (SocketException ex)
+            {
+                DisplayError($"Could not start server: {ex.Message}");
+                UpdateServerStatus(ServerStatus.Stopped);
+                return false;
+            }
         }
 
         private void Stop()
