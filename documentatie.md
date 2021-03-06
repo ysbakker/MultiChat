@@ -175,12 +175,113 @@ Mijn advies is om boxing en unboxing zoveel mogelijk te vermijden. In de huidige
 # Delegates & Invoke
 
 ## Beschrijving van concept in eigen woorden
+Een delegate is, als het ware, een "blueprint" voor een functie. Het maakt het mogelijk om functies als variabele de declareren, waardoor deze o.a. als parameter aan andere functie meegegeven kan worden. Een delegate wordt als volgt gedefinieerd:
 
+```cs
+delegate void Handler(string message);
+```
+
+Na deze regel code bestaat het type `Handler`. Dit type kan bijvoorbeeld gebruikt worden als parameter:
+
+```cs
+void ButtonClicked(Handler handle) {
+  handle("Button was clicked");
+  // of handle.Invoke("Button was clicked");
+}
+```
+
+Een delegate kan aangeroepen worden alsof het een "gewone" functie is, dus met `()`. Op de achtergrond wordt echter `.Invoke(...)` aangeroepen, het is ook mogelijk om dat handmatig te doen. Er is geen functioneel verschil tussen deze mogelijkheden.
+
+### Named vs anonymous
+
+Een delegate-type kan als normaal type gebruikt worden. Er kunnen dus ook gewoon variabelen gemaakt worden die aan een functie refereren:
+
+```cs
+Handler handle = HandleButtonClick;
+
+void HandleButtonClick(string message) {
+  Console.WriteLine(message);
+}
+```
+
+Vanaf dat moment bevat de variabele `handle` een referentie naar `HandleButtonClick`. In dit geval is er sprake van een "Named delegate". Het is echter ook mogelijk om een anonymous delegate te maken, dat maakt de syntax iets compacter:
+
+```cs
+Handler handle = delegate(string message) {
+  Console.WriteLine(message);
+}
+```
+
+Functioneel doet dit hetzelfde als het vorige voorbeeld.
+
+### Lambda expressions
+
+Het is sinds C# 3.0 ook mogelijk om lambda expressions te gebruiken bij het definiëren van anonymous delegates. Lambda expressions zijn iets flexibeler:
+
+```cs
+Handler handle = message => {
+  Console.WriteLine(message);
+}
+```
+
+Lambda expressions maken _type inference_ mogelijk bij delegate-instanties. De compiler kan er aan de hand van de signature van het delegate-type (`Handler(string message)`) vanuit gaan dat de eerste parameter van het type `string` is. Daarom is het bij lambda's mogelijk om de typering weg te laten. Expliciete typeringen zijn nog steeds toegestaan.
+
+Bij lambda expressions bestaat ook nog een onderscheid tussen _expression lambda's_ en _statement lambda's_. Een statement lambda heeft _curly brackets_ (`{}`) en kan uit meerdere regels bestaan. Een expression lambda heeft geen curly brackets, bestaat uit één regel en returnt het stuk code na de `=>` operator:
+
+```cs
+delegate int Calcfn(int a, int b);
+
+Calcfn sum = (a,b) => a + b;
+Calcfn product = (a,b) => a * b;
+```
+
+Dit maakt de code wederom compacter en mogelijk makkelijker leesbaar.
+
+### Multicasting
+
+Delegate _multicasting_ maakt het mogelijk om meerdere instanties van een delegate tegelijkertijd aan te roepen. Een multicast delegate heeft hetzelfde type als al zijn "children". Delegates van hetzelfde type kunnen aan een delegate toegevoegd worden met de `+` operator. M.b.v. de `-` operator kunnen ze vervolgens ook weer verwijderd worden. Dit ziet er ongeveer zo uit:
+
+```cs
+delegate void Protocol(string user);
+
+Protocol Hi = user => Console.WriteLine($"Hello {user}!");
+Protocol Time = user => Console.WriteLine($"{user}, it's currently {time}.");
+Protocol Bye = user => Console.WriteLine($"Goodbye {user}.");
+
+Protocol sequence = Hi;
+sequence += Time;
+sequence += Bye;
+
+sequence("admin");
+/* > Hello admin!
+ * > admin, it's currently 2:30.
+ * > Goodbye admin.
+ */
+
+sequence -= Time;
+
+sequence("admin");
+/* > Hello admin!
+ * > Goodbye admin.
+ */
+```
 ## Code voorbeeld van je eigen code
 
+Ik gebruik geen custom delegates. Wel maak ik gebruik van de ingebouwde `Predicate<T>` delegate (zie `MultiChat.Common/ConnectionSettings.cs`):
+
+```cs
+private readonly Predicate<string> _nameValidator = (name) => !string.IsNullOrEmpty(name) && name.Length > 1 && name.Length < 20;
+```
 ## Alternatieven & adviezen
 
+Delegates zijn heel nuttig, met name bij het gebruik van callbacks in events. In modern C# is het echter de vraag of het zelf definiëren van delegates nog wel nodig is. Er zitten namelijk al generic delegate types ingebouwd, waaronder `Action<T>`, `Func<T,TResult>` en `Predicate<T>`. `Action` is voor `void`-achtigen, `Func` is voor methodes die iets returnen en `Predicate` is voor methodes die één parameter hebben een een boolean returnen. `Action` en `Func` hebben implementaties met ondersteuning voor 0-16 parameters ([`Func` met 16 parameters](https://docs.microsoft.com/en-us/dotnet/api/system.func-17?view=net-5.0)) en zullen dus voor de bijna alle gevallen voldoende mogelijkheden bieden. 
+
+Het is dus belangrijk om goed na te denken voor je een custom delegate maakt, en of het niet gewoon opgelost kan worden met een ingebouwde delegate. Een extra overweging is dat bijvoorbeeld alle `Action` implementaties gemulticast kunnen worden, eigen implementaties met verschillende typen kunnen dat niet. 
 ## Authentieke en gezaghebbende bronnen
+- [Delegates (C# Programming Guide)](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/)
+- [Delegates with Named vs. Anonymous Methods (C# Programming Guide)](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/delegates-with-named-vs-anonymous-methods)
+- [Lambda expressions (C# reference)](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/lambda-expressions)
+- [How to combine delegates (Multicast Delegates) (C# Programming Guide)](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/how-to-combine-delegates-multicast-delegates)
 
 # Threading & Async
 
