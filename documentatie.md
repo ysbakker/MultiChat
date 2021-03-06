@@ -265,6 +265,8 @@ sequence("admin");
  * > Goodbye admin.
  */
 ```
+
+NB: Technisch gezien is de volgorde van uitvoering van multicast delegates niet gedefinieerd ("undefined" volgens Microsoft). Het is "toevallig" zo dat delegates nu in dezelfde volgorde als dat ze worden toegevoegd worden uitgevoerd, maar het is best mogelijk dat dit in de toekomst verandert. Het is daarom geen goed idee om hier vanuit te gaan ([meer informatie](https://stackoverflow.com/a/24484801/3235858)).
 ## Code voorbeeld van je eigen code
 
 Ik gebruik geen custom delegates. Wel maak ik gebruik van de ingebouwde `Predicate<T>` delegate (zie `MultiChat.Common/ConnectionSettings.cs`):
@@ -286,9 +288,111 @@ Het is dus belangrijk om goed na te denken voor je een custom delegate maakt, en
 # Threading & Async
 
 ## Beschrijving van concept in eigen woorden
+Dit concept heeft te maken met het gelijktijdig (asynchroon) uitvoeren van code. In C# berust parralellisatie grotendeels op het concept _thread pool_.
+
+![](https://upload.wikimedia.org/wikipedia/commons/0/0c/Thread_pool.svg)
+
+Kort gezegd alloceert de C#-runtime een aantal software threads. Deze threads vormen vervolgens samen de thread pool, waar vervolgens stukken code op uitgevoerd kunnen worden. Een thread in C# heeft dus niks te maken met een hardware-thread in een CPU. Het operating system bepaalt uiteindelijk welke processen op welk deel van de hardware en wanneer worden uitgevoerd.
+
+C# heeft een abstractielaag die onder water gebruik maakt van een thread pool. Deze abstractielaag heet Task Parallel Library, oftewel TPL. In TPL wordt het concept `Task` geïntroduceerd. Dit representeert een stuk werk, of taak, die het programma uit moet voeren. Conceptueel gezien is een `Task` vergelijkbaar met een `Promise` in JavaScript.
+
+De TPL maakt asynchroon programmeren een stuk minder complex en beter toegankelijk. Door een functie een `Task` te laten returnen en het `async` keyword in de signature te gebruiken kan de code asynchroon uitgevoerd worden.
+
+
+```cs
+async Task DoWork() {
+  await ComplexOperation();
+}
+```
+
+Het `await` keyword wacht tot een `Task` is afgerond. Als er meerdere `Task`s gelijktijdig uitgevoerd worden kan deze aan een variabele toegewezen worden:
+
+```cs
+async Task DoWork() {
+  var op1 = ComplexOperation() // returns Task<string>;
+  var op2 = SomeOtherOperation() // returns Task;
+
+  string result = await op1();
+  DoStuff(result);
+
+  await op2();
+}
+```
+
+Of een lijst met taken:
+
+```cs
+async Task DoWork() {
+  var numbers = new List<int> {1,2,3,4,5};
+  var tasks = new List<Task>();
+  foreach (var number in numbers) {
+    tasks.Add(ComplexOperation(number)); // returns Task
+  }
+
+  await Task.WhenAll(tasks);
+}
+```
+
+Op die manier wachten asynchroon uitvoerbare taken niet onnodig op elkaar.
 
 ## Code voorbeeld van je eigen code
+Ik maak op heel veel plekken gebruik van async/await en de TPL. Een onconventioneel voorbeeld is misschien dit:
+```cs
+private async void ReadAsync(Client client, CancellationToken token)
+{
+    while (!token.IsCancellationRequested)
+    {
+        try
+        {
+            var stream = client.TcpClient.GetStream();
+            var message = new Message();
+            do
+            {
+                var buffer = new byte[Settings.BufferSize];
+                int bytesRead = await stream.ReadAsync(buffer, 0, Settings.BufferSize, token);
+                if (bytesRead > 0)
+                {
+                    message.Append(buffer);
+                }
+            } while (!message.Terminated && stream.DataAvailable);
 
+            if (message.Empty) continue;
+            if (message.Special)
+            {
+                HandleSpecialMessage(client, message);
+            }
+            else
+            {
+                var decoded = message.Decode();
+                AppendMessage(decoded);
+                await BroadcastMessage(decoded, client);
+            }
+        }
+        catch (Exception ex) when (ex is InvalidOperationException || ex is ObjectDisposedException ||
+                                    ex is IOException)
+        {
+            // The client is no longer connected properly
+            DisconnectClient(client);
+            return;
+        }
+    }
+}
+```
+
+Ik maak hier gebruik van `async void` in plaats van `async Task`. Over het algemeen kan `async void` beter vermeden worden. Het beschrijft namelijk een operatie die op de achtergrond plaatsvindt en returnt geen task. Daarnaast kunnen exceptions niet met een eenvoudige `try {} catch {}` afgehandeld worden. `async void` wordt vooral gebruikt bij event handlers, dus stukken code die constant op de achtergrond kijken of er bijvoorbeeld een knop is ingedrukt.
+
+Ik heb in dit geval expliciet voor deze oplossing gekozen, omdat ik denk dat het de meest duidelijke is. De _caller_ kan gewoon `ReadAsync()` aanroepen, dus zonder await. Als ik gebruik had willen maken van `Task` had ik dit ook kunnen doen, maar dan is de compiler het er niet mee eens en moet je de methode aan een "discard" binden:
+
+```cs
+_ = ReadAsync()
+```
+
+Dit heeft in principe hetzelfde resultaat, maar vind ik eerder een lelijke workaround. Het gebruik van `async void` brengt in mijn applicatie geen nadelen met zich mee, omdat ik exceptions in de methode zelf afhandel. Omdat het lezen van een `NetworkStream` in mijn ogen alles weg heeft van een event vind ik het in dit geval een passende oplossing.
 ## Alternatieven & adviezen
 
+Een alternatief voor het gebruik van de TPL is het handmatig aanmaken van threads. Deze operatie bevindt zich dichter bij de hardware maar wordt over het algemeen afgeraden. De TPL-laag heeft een stuk meer mogelijkheden zoals cancellation, exception handling en progress reports. Het versimpelt het asynchroon uitvoeren van code enorm, op technisch en conceptueel gebied.
+
+Mijn advies is om code zoveel mogelijk asynchroon uit te voeren. De C#-runtime weet hoe hij om moet gaan met grote hoeveelheden tasks, en het resultaat is een meetbaar snellere applicatie. Asynchroon programmeren is echter geen vervanging voor algoritmeoptimalisaties, en het is zeker van belang om kritisch te blijven kijken naar de functionaliteit en complexiteit van de code.
 ## Authentieke en gezaghebbende bronnen
+- [Wikipedia: Thread pool](https://en.wikipedia.org/wiki/Thread_pool)
+- [Task-based asynchronous programming](https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/task-based-asynchronous-programming)
